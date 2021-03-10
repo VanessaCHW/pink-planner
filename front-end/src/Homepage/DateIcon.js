@@ -40,6 +40,7 @@ const Date = styled.div`
   align-items: center;
   font-weight: 300;
   font-size: 1.3rem;
+  min-width: 25vw;
   .number {
     font-size: 4rem;
     line-height: 4rem;

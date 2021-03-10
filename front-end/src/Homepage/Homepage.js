@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { COLORS } from "../Constants";
 
 import DateIcon from "./DateIcon";
+import AddEventIcon from "../Components/AddEventIcon";
 
 const Homepage = () => {
   const today = new Date();
@@ -14,6 +15,7 @@ const Homepage = () => {
         <DateIcon today={today} />
       </DateContainer>
       <div>Other icons</div>
+      <AddEventIcon />
     </Wrapper>
   );
 };

@@ -3,7 +3,7 @@ import GlobalStyles from "./GlobalStyles";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Homepage from "./Homepage/Homepage";
-import MyCalendar from "./Calendar/MyCalendar";
+import CalendarView from "./Calendar/CalendarView";
 
 function App() {
   return (
@@ -14,7 +14,13 @@ function App() {
           <Homepage />
         </Route>
         <Route exact path="/calendar-month">
-          <MyCalendar />
+          <CalendarView />
+        </Route>
+        <Route exact path="/date/:date">
+          <p>Some date</p>
+        </Route>
+        <Route exact path="/new">
+          <p>new</p>
         </Route>
       </Switch>
     </Router>
