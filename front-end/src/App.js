@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Homepage from "./Homepage/Homepage";
 import CalendarView from "./Calendar/CalendarView";
+import DayView from "./Day/DayView";
+import MeetingForm from "./MeetingForm";
 
 function App() {
   return (
@@ -17,10 +19,10 @@ function App() {
           <CalendarView />
         </Route>
         <Route exact path="/date/:date">
-          <p>Some date</p>
+          <DayView />
         </Route>
         <Route exact path="/new">
-          <p>new</p>
+          <MeetingForm />
         </Route>
       </Switch>
     </Router>
