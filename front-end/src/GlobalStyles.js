@@ -14,7 +14,7 @@ html, div, span, applet, object, iframe,
     article, aside, canvas, details, embed,
     figure, figcaption, footer, header, hgroup,
     menu, nav, output, ruby, section, summary,
-    time, mark, audio, video,body,div {
+    time, mark, audio, video,body,div,input {
         margin: 0;
         padding: 0;
         border: 0;
