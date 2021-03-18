@@ -7,6 +7,7 @@ import { FiCalendar } from "react-icons/fi";
 import { BsArrowRight } from "react-icons/bs";
 import { GrLocation } from "react-icons/gr";
 import { RiNotification2Line } from "react-icons/ri";
+import { BiTime } from "react-icons/bi";
 import { useHistory } from "react-router";
 import { v4 as uuidv4 } from "uuid";
 import DateIcons from "./Homepage/DateIcon";
@@ -29,10 +30,10 @@ let initialEvent = {
     time: null,
   },
   reminders: [
-    {
+    /* {
       method: null,
       minutes: null,
-    },
+    },*/
   ],
 };
 
@@ -40,9 +41,10 @@ const MeetingForm = () => {
   const history = useHistory();
   const [form, setForm] = useState(initialEvent);
 
-  const getNewID = () => {
-    return uuidv4();
-  };
+  const handleTitle = (value) => setForm({ ...form, title: value });
+  const handleDescription = (value) => setForm({ ...form, description: value });
+  const handleLocation = (value) => setForm({ ...form, location: value });
+  const getNewID = () => uuidv4();
 
   /******************************* */
   /** Select start/end date Input fields */
@@ -93,7 +95,7 @@ const MeetingForm = () => {
     let formatted = format(CalendarEndDate, "EEE. MMM. d, y");
     setDisplayEndDate(formatted);
 
-    if (eventStartDate === "") {
+    if (eventStartDate === "" || CalendarEndDate < eventStartDate) {
       setEventStartDate(CalendarEndDate);
       let formatted = format(CalendarEndDate, "EEE. MMM. d, y");
       setDisplayStartDate(formatted);
@@ -109,10 +111,26 @@ const MeetingForm = () => {
     document.getElementById("CalendarFormEnd").style.visibility = "hidden";
   };
 
-  /**************************************** */
-  const handleTitle = (value) => setForm({ ...form, title: value });
-  const handleDescription = (value) => setForm({ ...form, description: value });
-  const handleLocation = (value) => setForm({ ...form, location: value });
+  /******************************************
+   * TIME FIELD
+   ******************************************/
+  const [startTime, setStartTime] = useState("");
+
+  const HOURS = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
+  const MINUTES = ["00", "10", "20", "30", "40", "50"];
 
   return (
     <div>
@@ -135,7 +153,7 @@ const MeetingForm = () => {
         </Top>
         <Section>
           <Label>Date</Label>
-          <div className="dateInputSection">
+          <div className="dateNTimeInputSection">
             <InputBorder>
               <SectionInput
                 readOnly
@@ -188,7 +206,7 @@ const MeetingForm = () => {
         </Section>
         <Section>
           <Label>Time</Label>
-          <TimeRange>
+          {/* <TimeRange>
             <SectionInput3 id="startHour" type="text" placeholder="00" /> :{" "}
             <SectionInput3 id="startMin" type="text" placeholder="00" />{" "}
             <SectionInput3 id="startAMPM" type="text" placeholder="PM" />
@@ -199,6 +217,83 @@ const MeetingForm = () => {
             <SectionInput3 id="endMin" type="text" placeholder="00" />{" "}
             <SectionInput3 id="endAMPM" type="text" placeholder="PM" />
           </TimeRange>
+         */}
+          <div className="dateNTimeInputSection">
+            <InputBorder>
+              <SectionInput
+                readOnly
+                placeholder="Select time"
+                value={startTime}
+                onClick={() =>
+                  (document.getElementById("StartTimePicker").style.visibility =
+                    "visible")
+                }
+              />
+              <BiTime color="#b3b3b3" />
+            </InputBorder>
+            <BsArrowRight />
+            <InputBorder>
+              <SectionInput
+                readOnly
+                placeholder="Select time"
+                onClick={() =>
+                  (document.getElementById("EndTimePicker").style.visibility =
+                    "visible")
+                }
+              />
+              <BiTime color="#b3b3b3" />
+            </InputBorder>
+          </div>
+          <TimePicker id="StartTimePicker">
+            <List className="HourList">
+              {HOURS.map((hour) => (
+                <li>{hour}</li>
+              ))}
+            </List>
+            <List className="HourList">
+              {MINUTES.map((min) => (
+                <li>{min}</li>
+              ))}
+            </List>
+            <List className="HourList">
+              <li>AM</li>
+              <li>PM</li>
+            </List>
+            <AcceptTimeButton
+              onClick={(ev) => {
+                ev.preventDefault();
+                document.getElementById("StartTimePicker").style.visibility =
+                  "hidden";
+              }}
+            >
+              Ok
+            </AcceptTimeButton>
+          </TimePicker>
+          <TimePicker2 id="EndTimePicker">
+            <List className="HourList">
+              {HOURS.map((hour) => (
+                <li>{hour}</li>
+              ))}
+            </List>
+            <List className="HourList">
+              {MINUTES.map((min) => (
+                <li>{min}</li>
+              ))}
+            </List>
+            <List className="HourList">
+              <li>AM</li>
+              <li>PM</li>
+            </List>
+            <AcceptTimeButton
+              onClick={(ev) => {
+                ev.preventDefault();
+                document.getElementById("EndTimePicker").style.visibility =
+                  "hidden";
+              }}
+            >
+              Ok
+            </AcceptTimeButton>
+          </TimePicker2>
         </Section>
         <Section>
           <Label>Location</Label>
@@ -269,7 +364,7 @@ const Section = styled.div`
   box-sizing: border-box;
   border-top: 1px solid #b3b3b3;
   padding: 15px 20px;
-  .dateInputSection {
+  .dateNTimeInputSection {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -286,6 +381,8 @@ const InputBorder = styled.div`
   border-radius: 3px;
   display: inline-block;
   padding: 0 5px;
+  align-items: center;
+  display: flex;
 `;
 
 const SectionInput = styled.input`
@@ -353,5 +450,31 @@ const TimeRange = styled.div`
 const Arrow = styled.div`
   padding: 0 10px;
 `;
+const List = styled.ul`
+  text-decoration: none;
+  overflow: hidden;
+  overflow-y: scroll;
+  height: 95px;
+  width: 56px;
+  margin-top: 3px;
+  background-color: pink;
+  text-align: center;
+  display: inline-block;
+`;
 
+const TimePicker = styled.div`
+  visibility: hidden;
+  position: absolute;
+  z-index: 2;
+`;
+const TimePicker2 = styled.div`
+  visibility: hidden;
+  position: absolute;
+  right: 20px;
+  z-index: 2;
+`;
+const AcceptTimeButton = styled.button`
+  display: block;
+  width: 100%;
+`;
 export default MeetingForm;
