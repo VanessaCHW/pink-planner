@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { COLORS } from "./Constants";
+import { COLORS, HOURS, MINUTES } from "./Constants";
 import Calendar from "react-calendar";
 import { format } from "date-fns";
 import { FiCalendar } from "react-icons/fi";
@@ -10,7 +10,6 @@ import { RiNotification2Line } from "react-icons/ri";
 import { BiTime } from "react-icons/bi";
 import { useHistory } from "react-router";
 import { v4 as uuidv4 } from "uuid";
-import DateIcons from "./Homepage/DateIcon";
 
 let initialEvent = {
   kind: "calendar-event",
@@ -114,23 +113,50 @@ const MeetingForm = () => {
   /******************************************
    * TIME FIELD
    ******************************************/
-  const [startTime, setStartTime] = useState("");
+  const [startTime, setStartTime] = useState({
+    hours: null,
+    minutes: null,
+    ap: null,
+    allday: false,
+  });
+  const [endTime, setEndTime] = useState({
+    hours: null,
+    minutes: null,
+    ap: null,
+    allday: false,
+  });
 
-  const HOURS = [
-    "01",
-    "02",
-    "03",
-    "04",
-    "05",
-    "06",
-    "07",
-    "08",
-    "09",
-    "10",
-    "11",
-    "12",
-  ];
-  const MINUTES = ["00", "10", "20", "30", "40", "50"];
+  const onStartHourChange = (value) => {
+    setStartTime({ ...startTime, hours: value });
+  };
+  const onStartMinChange = (value) => {
+    setStartTime({ ...startTime, minutes: value });
+  };
+  const onStartAPChange = (value) => {
+    setStartTime({ ...startTime, ap: value });
+  };
+
+  const onEndHourChange = (value) => {
+    setEndTime({ ...endTime, hours: value });
+  };
+  const onEndMinChange = (value) => {
+    setEndTime({ ...endTime, minutes: value });
+  };
+  const onEndAPChange = (value) => {
+    setEndTime({ ...endTime, ap: value });
+  };
+
+  const allDaySelect = (checked) => {
+    if (checked) {
+      setStartTime({ ...startTime, allday: true });
+      setEndTime({ ...endTime, allday: true });
+    } else {
+      setStartTime({ ...startTime, allday: false });
+      setEndTime({ ...endTime, allday: false });
+    }
+  };
+
+  /************************************* */
 
   return (
     <div>
@@ -205,95 +231,52 @@ const MeetingForm = () => {
           </CalendarForm>
         </Section>
         <Section>
-          <Label>Time</Label>
-          {/* <TimeRange>
-            <SectionInput3 id="startHour" type="text" placeholder="00" /> :{" "}
-            <SectionInput3 id="startMin" type="text" placeholder="00" />{" "}
-            <SectionInput3 id="startAMPM" type="text" placeholder="PM" />
+          <TimeSection>
+            <Label className="TimeLabel">Time</Label>{" "}
+            <div className="AllDaySection">
+              <input
+                type="checkbox"
+                className="checkBoxBox"
+                onChange={(ev) => allDaySelect(ev.target.checked)}
+              />
+              <label>All-day</label>
+            </div>
+          </TimeSection>
+          <TimeRange>
+            <Select onChange={(ev) => onStartHourChange(ev.target.value)}>
+              {HOURS.map((hour) => (
+                <option>{hour}</option>
+              ))}
+            </Select>
+            :
+            <Select onChange={(ev) => onStartMinChange(ev.target.value)}>
+              {MINUTES.map((min) => (
+                <option>{min}</option>
+              ))}
+            </Select>
+            <Select onChange={(ev) => onStartAPChange(ev.target.value)}>
+              <option>PM</option>
+              <option>AM</option>
+            </Select>
             <Arrow>
               <BsArrowRight />
             </Arrow>
-            <SectionInput3 id="endHour" type="text" placeholder="00" /> :{" "}
-            <SectionInput3 id="endMin" type="text" placeholder="00" />{" "}
-            <SectionInput3 id="endAMPM" type="text" placeholder="PM" />
+            <Select onChange={(ev) => onEndHourChange(ev.target.value)}>
+              {HOURS.map((hour) => (
+                <option>{hour}</option>
+              ))}
+            </Select>
+            :
+            <Select onChange={(ev) => onEndMinChange(ev.target.value)}>
+              {MINUTES.map((min) => (
+                <option>{min}</option>
+              ))}
+            </Select>
+            <Select onChange={(ev) => onEndAPChange(ev.target.value)}>
+              <option>PM</option>
+              <option>AM</option>
+            </Select>
           </TimeRange>
-         */}
-          <div className="dateNTimeInputSection">
-            <InputBorder>
-              <SectionInput
-                readOnly
-                placeholder="Select time"
-                value={startTime}
-                onClick={() =>
-                  (document.getElementById("StartTimePicker").style.visibility =
-                    "visible")
-                }
-              />
-              <BiTime color="#b3b3b3" />
-            </InputBorder>
-            <BsArrowRight />
-            <InputBorder>
-              <SectionInput
-                readOnly
-                placeholder="Select time"
-                onClick={() =>
-                  (document.getElementById("EndTimePicker").style.visibility =
-                    "visible")
-                }
-              />
-              <BiTime color="#b3b3b3" />
-            </InputBorder>
-          </div>
-          <TimePicker id="StartTimePicker">
-            <List className="HourList">
-              {HOURS.map((hour) => (
-                <li>{hour}</li>
-              ))}
-            </List>
-            <List className="HourList">
-              {MINUTES.map((min) => (
-                <li>{min}</li>
-              ))}
-            </List>
-            <List className="HourList">
-              <li>AM</li>
-              <li>PM</li>
-            </List>
-            <AcceptTimeButton
-              onClick={(ev) => {
-                ev.preventDefault();
-                document.getElementById("StartTimePicker").style.visibility =
-                  "hidden";
-              }}
-            >
-              Ok
-            </AcceptTimeButton>
-          </TimePicker>
-          <TimePicker2 id="EndTimePicker">
-            <List className="HourList">
-              {HOURS.map((hour) => (
-                <li>{hour}</li>
-              ))}
-            </List>
-            <List className="HourList">
-              {MINUTES.map((min) => (
-                <li>{min}</li>
-              ))}
-            </List>
-            <List className="HourList">
-              <li>AM</li>
-              <li>PM</li>
-            </List>
-            <AcceptTimeButton
-              onClick={(ev) => {
-                ev.preventDefault();
-                document.getElementById("EndTimePicker").style.visibility =
-                  "hidden";
-              }}
-            >
-              Ok
-            </AcceptTimeButton>
-          </TimePicker2>
         </Section>
         <Section>
           <Label>Location</Label>
@@ -374,6 +357,21 @@ const Section = styled.div`
 const Label = styled.label`
   padding-bottom: 10px;
   display: block;
+  font-size: 1.2rem;
+`;
+
+const TimeSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  .TimeLabel {
+    display: inline-block;
+  }
+  .AllDaySection {
+    font-size: 1.2rem;
+  }
+  .checkBoxBox {
+    margin: 0 5px;
+  }
 `;
 
 const InputBorder = styled.div`
@@ -410,21 +408,6 @@ const SectionInput2 = styled.input`
   }
 `;
 
-const SectionInput3 = styled.input`
-  padding: 5px 0;
-  font-size: 1rem;
-  width: 25px;
-  text-align: center;
-  &:focus {
-    outline: none;
-  }
-  &::placeholder {
-    opacity: 70%;
-  }
-  .AMPM {
-    padding: 0 5px;
-  }
-`;
 const CalendarForm = styled.div`
   padding: 0 6vw;
   height: 100vh;
@@ -450,31 +433,13 @@ const TimeRange = styled.div`
 const Arrow = styled.div`
   padding: 0 10px;
 `;
-const List = styled.ul`
-  text-decoration: none;
-  overflow: hidden;
-  overflow-y: scroll;
-  height: 95px;
-  width: 56px;
-  margin-top: 3px;
-  background-color: pink;
-  text-align: center;
-  display: inline-block;
+
+const Select = styled.select`
+  appearance: none;
+  padding: 1px 6px;
+  font-size: 1.1rem;
+  border: none;
+  background-color: #f6f7f6;
 `;
 
-const TimePicker = styled.div`
-  visibility: hidden;
-  position: absolute;
-  z-index: 2;
-`;
-const TimePicker2 = styled.div`
-  visibility: hidden;
-  position: absolute;
-  right: 20px;
-  z-index: 2;
-`;
-const AcceptTimeButton = styled.button`
-  display: block;
-  width: 100%;
-`;
 export default MeetingForm;
