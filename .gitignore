@@ -4770,3 +4770,4 @@ node_modules/uuid/dist/umd/uuidv4.min.js
 node_modules/uuid/dist/umd/uuidv5.min.js
 node_modules/uuid/dist/umd/uuidValidate.min.js
 node_modules/uuid/dist/umd/uuidVersion.min.js
+backend/yarn-error.log
