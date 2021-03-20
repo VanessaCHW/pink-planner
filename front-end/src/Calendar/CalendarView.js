@@ -10,7 +10,7 @@ const CalendarView = () => {
   const history = useHistory();
   return (
     <div>
-      <Link onClick={() => history.goBack()}>Back</Link>
+      <div onClick={() => history.goBack()}>Back</div>
       <MyCalendar />
       <AddEventIcon />
     </div>
