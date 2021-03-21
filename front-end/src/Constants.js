@@ -7,6 +7,7 @@ export const COLORS = {
   mainBlue: "#567BF3",
   gradientRoseanna: "linear-gradient(to left, #ffc3a0, #ffafbd)",
   gradientTranquil: "linear-gradient(to left, #eecda3, #ef629f)",
+  gradientDisco: "linear-gradient(to right, #ba5370, #f4e2d8)",
 };
 
 export const HOURS = [

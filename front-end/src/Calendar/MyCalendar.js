@@ -5,7 +5,7 @@ import Calendar from "react-calendar";
 import { Link, useHistory } from "react-router-dom";
 import { format } from "date-fns";
 
-const MyCalendar = () => {
+const MyCalendar = ({ updateCurrentMonth }) => {
   /**Calendar state and functions */
   const [value, setValue] = useState(new Date());
 
@@ -22,15 +22,6 @@ const MyCalendar = () => {
     history.push(`/date/${formattedDate}`);
   };
 
-  //TODO
-  /**
-   * Get the current month (with the current date)
-   * Fetch a list of the days that have an event planned
-   * For the month only
-   * Compare in a function
-   *
-   */
-
   const tileContent = ({ date, view }) =>
     view === "month" && date.getDay() === 2 ? <p>*</p> : null;
 
@@ -44,6 +35,10 @@ const MyCalendar = () => {
         prev2Label={null}
         next2Label={null}
         onClickDay={(value, event) => handleClickDate(value, event)}
+        onClick={(value, event) => console.log(value, event)}
+        onActiveStartDateChange={({ activeStartDate, value, view }) => {
+          updateCurrentMonth(activeStartDate.getMonth());
+        }}
       />
     </Wrapper>
   );

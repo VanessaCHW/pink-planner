@@ -40,7 +40,7 @@ let initialEvent = {
 const MeetingForm = () => {
   const history = useHistory();
   const [form, setForm] = useState(initialEvent);
-  const [buttonDisabled, setButtonDisabled] = useState("true");
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
     if (form.title != null && form.start.date != null) {
