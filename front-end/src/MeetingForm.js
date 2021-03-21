@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { COLORS, HOURS, MINUTES } from "./Constants";
 import Calendar from "react-calendar";
@@ -12,21 +12,22 @@ import { useHistory } from "react-router";
 import { v4 as uuidv4 } from "uuid";
 
 let initialEvent = {
+  id_: uuidv4(),
   kind: "calendar-event",
-  id: null,
-  title: null,
-  description: null,
-  location: null,
+  title: "",
+  description: "",
+  location: "",
   creator: {
     name: "Vanessa Chan",
+    userId: "009",
   },
   start: {
     date: null,
-    time: null,
+    time: { hours: null, minutes: null, ap: null, allday: false },
   },
   end: {
     date: null,
-    time: null,
+    time: { hours: null, minutes: null, ap: null, allday: false },
   },
   reminders: [
     /* {
@@ -39,17 +40,57 @@ let initialEvent = {
 const MeetingForm = () => {
   const history = useHistory();
   const [form, setForm] = useState(initialEvent);
+  const [buttonDisabled, setButtonDisabled] = useState("true");
+
+  useEffect(() => {
+    if (form.title != null && form.start.date != null) {
+      if (form.start.time.allday === true) {
+        setButtonDisabled(false);
+      } else {
+        if (
+          form.start.time.hours != null &&
+          form.start.time.minutes != null &&
+          form.start.time.ap != null &&
+          form.end.time.hours != null &&
+          form.end.time.minutes != null &&
+          form.end.time.ap != null
+        ) {
+          setButtonDisabled(false);
+        } else {
+          setButtonDisabled(true);
+        }
+      }
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [form]);
 
   const handleTitle = (value) => setForm({ ...form, title: value });
   const handleDescription = (value) => setForm({ ...form, description: value });
   const handleLocation = (value) => setForm({ ...form, location: value });
-  const getNewID = () => uuidv4();
+
+  const CreateEvent = (event) => {
+    event.preventDefault();
+    console.log(form);
+
+    fetch("/newEvent", {
+      method: "POST",
+      body: JSON.stringify({ form }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => console.log("error!", error));
+  };
 
   /******************************* */
   /** Select start/end date Input fields */
   /******************************* */
-  const [eventStartDate, setEventStartDate] = useState("");
-  const [eventEndDate, setEventEndDate] = useState("");
   const [displayStartDate, setDisplayStartDate] = useState("");
   const [displayEndDate, setDisplayEndDate] = useState("");
 
@@ -69,20 +110,25 @@ const MeetingForm = () => {
   const onStartCalendarChange = (nextValue) => setCalendarStartDate(nextValue);
   const onEndCalendarChange = (nextValue) => setCalendarEndDate(nextValue);
 
-  const selectStartDate = (value) => setCalendarStartDate(value); //Selecting date in calendar view
-  const selectEndDate = (value) => setCalendarEndDate(value); //Selecting date in calendar view
+  const selectStartDate = (value) => {
+    setForm({ ...form, start: { ...form.start, date: value } });
+    setCalendarStartDate(value);
+  };
+  const selectEndDate = (value) => {
+    setForm({ ...form, end: { ...form.end, date: value } });
+    setCalendarEndDate(value);
+  };
 
   // OK button in the calendar view
   const submitStartDate = (event) => {
     event.preventDefault();
     document.getElementById("CalendarFormStart").style.visibility = "hidden";
-    setEventStartDate(CalendarStartDate);
+    console.log("Calendar", CalendarStartDate);
 
     let formatted = format(CalendarStartDate, "EEE. MMM. d, y");
     setDisplayStartDate(formatted);
-
-    if (eventEndDate === "" || eventEndDate < CalendarStartDate) {
-      setEventEndDate(CalendarStartDate);
+    if (form.end.date < CalendarStartDate) {
+      setForm({ ...form, end: { ...form.end, date: CalendarStartDate } });
       let formatted = format(CalendarStartDate, "EEE. MMM. d, y");
       setDisplayEndDate(formatted);
     }
@@ -90,79 +136,78 @@ const MeetingForm = () => {
   const submitEndDate = (event) => {
     event.preventDefault();
     document.getElementById("CalendarFormEnd").style.visibility = "hidden";
-    setEventEndDate(CalendarEndDate);
     let formatted = format(CalendarEndDate, "EEE. MMM. d, y");
     setDisplayEndDate(formatted);
-
-    if (eventStartDate === "" || CalendarEndDate < eventStartDate) {
-      setEventStartDate(CalendarEndDate);
+    if (form.start.date > CalendarEndDate) {
+      setForm({ ...form, start: { ...form.start, date: CalendarEndDate } });
       let formatted = format(CalendarEndDate, "EEE. MMM. d, y");
       setDisplayStartDate(formatted);
     }
-  };
-  // CANCEL BUTTON
-  const cancelStartDate = (event) => {
-    event.preventDefault();
-    document.getElementById("CalendarFormStart").style.visibility = "hidden";
-  };
-  const cancelEndDate = (event) => {
-    event.preventDefault();
-    document.getElementById("CalendarFormEnd").style.visibility = "hidden";
   };
 
   /******************************************
    * TIME FIELD
    ******************************************/
-  const [startTime, setStartTime] = useState({
-    hours: null,
-    minutes: null,
-    ap: null,
-    allday: false,
-  });
-  const [endTime, setEndTime] = useState({
-    hours: null,
-    minutes: null,
-    ap: null,
-    allday: false,
-  });
-
   const onStartHourChange = (value) => {
-    setStartTime({ ...startTime, hours: value });
+    setForm({
+      ...form,
+      start: { ...form.start, time: { ...form.start.time, hours: value } },
+    });
   };
   const onStartMinChange = (value) => {
-    setStartTime({ ...startTime, minutes: value });
+    setForm({
+      ...form,
+      start: { ...form.start, time: { ...form.start.time, minutes: value } },
+    });
   };
   const onStartAPChange = (value) => {
-    setStartTime({ ...startTime, ap: value });
+    setForm({
+      ...form,
+      start: { ...form.start, time: { ...form.start.time, ap: value } },
+    });
   };
-
   const onEndHourChange = (value) => {
-    setEndTime({ ...endTime, hours: value });
+    setForm({
+      ...form,
+      end: { ...form.end, time: { ...form.end.time, hours: value } },
+    });
   };
   const onEndMinChange = (value) => {
-    setEndTime({ ...endTime, minutes: value });
+    setForm({
+      ...form,
+      end: { ...form.end, time: { ...form.end.time, minutes: value } },
+    });
   };
   const onEndAPChange = (value) => {
-    setEndTime({ ...endTime, ap: value });
+    setForm({
+      ...form,
+      end: { ...form.end, time: { ...form.end.time, ap: value } },
+    });
   };
 
   const allDaySelect = (checked) => {
     if (checked) {
-      setStartTime({ ...startTime, allday: true });
-      setEndTime({ ...endTime, allday: true });
+      setForm({
+        ...form,
+        start: { ...form.start, time: { ...form.start.time, allday: true } },
+        end: { ...form.end, time: { ...form.end.time, allday: true } },
+      });
     } else {
-      setStartTime({ ...startTime, allday: false });
-      setEndTime({ ...endTime, allday: false });
+      setForm({
+        ...form,
+        start: { ...form.start, time: { ...form.start.time, allday: false } },
+        end: { ...form.end, time: { ...form.end.time, allday: false } },
+      });
     }
   };
-
-  /************************************* */
 
   return (
     <div>
       <div>
         <button onClick={() => history.goBack()}>x</button>
-        <button>Create event</button>
+        <button onClick={(ev) => CreateEvent(ev)} disabled={buttonDisabled}>
+          Create event
+        </button>
       </div>
       <form>
         <Top>
@@ -199,7 +244,6 @@ const MeetingForm = () => {
               <FiCalendar color="#b3b3b3" />
             </InputBorder>
           </div>
-
           <CalendarForm id="CalendarFormStart">
             <Calendar
               onChange={onStartCalendarChange}
@@ -210,11 +254,9 @@ const MeetingForm = () => {
               onClickDay={(value, event) => selectStartDate(value, event)}
             />
             <div className="ButtonBox">
-              <button onClick={(ev) => cancelStartDate(ev)}>Cancel</button>
               <button onClick={(event) => submitStartDate(event)}>Ok</button>
             </div>
           </CalendarForm>
-
           <CalendarForm id="CalendarFormEnd">
             <Calendar
               onChange={onEndCalendarChange}
@@ -225,7 +267,6 @@ const MeetingForm = () => {
               onClickDay={(value, event) => selectEndDate(value, event)}
             />
             <div className="ButtonBox">
-              <button onClick={(ev) => cancelEndDate(ev)}>Cancel</button>
               <button onClick={(event) => submitEndDate(event)}>Ok</button>
             </div>
           </CalendarForm>
@@ -244,37 +285,43 @@ const MeetingForm = () => {
           </TimeSection>
           <TimeRange>
             <Select onChange={(ev) => onStartHourChange(ev.target.value)}>
+              <option hidden></option>
               {HOURS.map((hour) => (
                 <option>{hour}</option>
               ))}
             </Select>
             :
             <Select onChange={(ev) => onStartMinChange(ev.target.value)}>
+              <option hidden></option>
               {MINUTES.map((min) => (
                 <option>{min}</option>
               ))}
             </Select>
             <Select onChange={(ev) => onStartAPChange(ev.target.value)}>
-              <option>PM</option>
+              <option hidden></option>
               <option>AM</option>
+              <option>PM</option>
             </Select>
             <Arrow>
               <BsArrowRight />
             </Arrow>
             <Select onChange={(ev) => onEndHourChange(ev.target.value)}>
+              <option hidden></option>
               {HOURS.map((hour) => (
                 <option>{hour}</option>
               ))}
             </Select>
             :
             <Select onChange={(ev) => onEndMinChange(ev.target.value)}>
+              <option hidden></option>
               {MINUTES.map((min) => (
                 <option>{min}</option>
               ))}
             </Select>
             <Select onChange={(ev) => onEndAPChange(ev.target.value)}>
-              <option>PM</option>
+              <option hidden></option>
               <option>AM</option>
+              <option>PM</option>
             </Select>
           </TimeRange>
         </Section>
@@ -437,9 +484,10 @@ const Arrow = styled.div`
 const Select = styled.select`
   appearance: none;
   padding: 1px 6px;
+  margin: 0 2px;
   font-size: 1.1rem;
   border: none;
-  background-color: #f6f7f6;
+  background-color: #f2f2f2;
 `;
 
 export default MeetingForm;
