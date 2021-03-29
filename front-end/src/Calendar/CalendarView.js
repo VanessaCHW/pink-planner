@@ -7,6 +7,27 @@ import { format } from "date-fns";
 
 import AddEventIcon from "../Components/AddEventIcon";
 
+const dateColors = [
+  "rgb(252,92,99)",
+  "rgb(222,87,102)",
+  "rgb(150,71,120)",
+  "rgb(115,64,129)",
+  "rgb(81,57,137)",
+  "rgb(48,49,145)",
+  "rgb(252,92,99)",
+  "rgb(222,87,102)",
+  "rgb(150,71,120)",
+  "rgb(115,64,129)",
+  "rgb(81,57,137)",
+  "rgb(48,49,145)",
+  "rgb(252,92,99)",
+  "rgb(222,87,102)",
+  "rgb(150,71,120)",
+  "rgb(115,64,129)",
+  "rgb(81,57,137)",
+  "rgb(48,49,145)",
+];
+
 const CalendarView = () => {
   const history = useHistory();
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -21,57 +42,136 @@ const CalendarView = () => {
       .then((res) => {
         setMonthEvents(res.data);
         console.log(res);
+        console.log(res.data);
       })
       .catch((error) => console.log("error!", error));
   }, [currentMonth]);
 
-  return (
-    <div>
-      <div onClick={() => history.goBack()}>Back</div>
-      <MyCalendar updateCurrentMonth={updateCurrentMonth} />
-      <div>
-        <div>This month's events</div>
+  let colorIndex = 0;
 
+  return (
+    <Wrapper>
+      <div onClick={() => history.goBack()}>Back</div>
+      <Tabs>
+        <TabItem onClick={() => history.push("/calendar-month")}>month</TabItem>
+        <TabItem style={{ backgroundColor: "#b5cdfd" }}>week</TabItem>
+        <TabItem
+          style={{ backgroundColor: "#b5cdfd" }}
+          onClick={() => history.push(`/date/${format(new Date(), "y-MM-dd")}`)}
+        >
+          Today
+        </TabItem>
+      </Tabs>
+      <MyCalendar updateCurrentMonth={updateCurrentMonth} />
+      {MonthEvents.length === 0 ? (
+        <NoEventsSection>
+          <p>You have no upcoming events. </p>
+          <p>Start planning your month now!</p>
+          <AddEventButton>Add new event</AddEventButton>
+          <AddEventImg src="Startup.png" alt="Add fun activities" />
+        </NoEventsSection>
+      ) : (
+        <div></div>
+      )}
+      <EventsSection>
         {MonthEvents.map((ev) => (
-          <EventBox>
-            <DateBox>
-              <div className="dayName">
-                {format(new Date(ev.start.date), "EEE.")}
-              </div>
-              <div>{format(new Date(ev.start.date), "d")}</div>
+          <EventBox
+            onClick={() =>
+              history.push(`/date/${format(new Date(ev.date), "y-MM-dd")}`)
+            }
+          >
+            <DateBox style={{ background: dateColors[colorIndex++] }}>
+              <div className="dayName">{format(new Date(ev.date), "EEE.")}</div>
+              <div>{format(new Date(ev.date), "d")}</div>
             </DateBox>
-            <div>{ev.title}</div>
+            <DayEventsBox>
+              {ev.events.map((meeting) => (
+                <EventTitle style={{ color: dateColors[colorIndex] }}>
+                  {meeting.title}
+                </EventTitle>
+              ))}
+            </DayEventsBox>
           </EventBox>
         ))}
-      </div>
+      </EventsSection>
       <AddEventIcon />
-    </div>
+    </Wrapper>
   );
 };
+const Wrapper = styled.div`
+  min-height: 100vh;
+  background-color: ${COLORS.background};
+`;
+const Tabs = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+const TabItem = styled.div`
+  flex-grow: 1;
+  text-align: center;
+  background-color: rgb(150, 184, 252);
+  border: 1px solid #cedefd;
+  color: white;
+  text-transform: uppercase;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom: none;
+  padding: 6px 0;
+  font-size: 1.2rem;
+`;
+const NoEventsSection = styled.div`
+  margin-top: 20px;
+  text-align: center;
+  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const AddEventImg = styled.img`
+  max-width: 70vw;
+  padding-bottom: 20px;
+`;
+const AddEventButton = styled.button`
+  font-size: 1.3rem;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid pink;
+`;
+const EventsSection = styled.div``;
+
 const EventBox = styled.div`
-  margin-left: 50px;
-  border-left: 1px solid black;
-  position: relative;
-  height: 100px;
+  display: flex;
 `;
 const DateBox = styled.div`
-  background: white;
-  position: absolute;
-  border-radius: 50px;
-  border: 1px solid pink;
-  width: 60px;
-  height: 60px;
+  background-color: blue;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  left: -30px;
-  font-size: 1.5rem;
-  line-height: 1.4rem;
+  color: ${COLORS.text2};
+  font-size: 2rem;
+  min-width: 100px;
+  min-height: 100px;
 
   .dayName {
-    font-size: 1.1rem;
-    line-height: 1.4rem;
+    font-size: 1rem;
+    line-height: 1rem;
   }
+`;
+
+const DayEventsBox = styled.div`
+  background-color: ${COLORS.background};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  border-bottom: 1px solid #dae2f1;
+`;
+
+const EventTitle = styled.div`
+  padding-left: 15px;
+  font-size: 1.4rem;
 `;
 export default CalendarView;
