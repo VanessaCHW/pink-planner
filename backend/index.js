@@ -6,6 +6,36 @@ const morgan = require("morgan");
 
 let user_events = [
   {
+    id_: "872aca93-56fd-6158-a135-e69fgjy6824f",
+    kind: "calendar-event",
+    title: "Camping Trip",
+    description: "Camping Mont Tremblant",
+    location: "Parc du Mont Tremblant, Lac superieur",
+    creator: {
+      name: "Vanessa Chan",
+      userId: "009",
+    },
+    start: {
+      date: "2021-03-26T05:00:00.000Z",
+      time: {
+        hours: "06",
+        minutes: "00",
+        ap: "PM",
+        allday: false,
+      },
+    },
+    end: {
+      date: "2021-03-28T05:00:00.000Z",
+      time: {
+        hours: "06",
+        minutes: "00",
+        ap: "PM",
+        allday: false,
+      },
+    },
+    reminders: [],
+  },
+  {
     id_: "872aca93-56fd-4229-a135-e69fgjy6824f",
     kind: "calendar-event",
     title: "Lunch with Emma",
@@ -65,6 +95,66 @@ let user_events = [
     },
     reminders: [],
   },
+  {
+    id_: "872aca93-56fd-4229-a135-e69fgjy6824f",
+    kind: "calendar-event",
+    title: "Dentist",
+    description: "Cavity reparation",
+    location: "Clinic C, 213 Blue Street",
+    creator: {
+      name: "Vanessa Chan",
+      userId: "009",
+    },
+    start: {
+      date: "2021-03-20T05:00:00.000Z",
+      time: {
+        hours: "06",
+        minutes: "00",
+        ap: "PM",
+        allday: false,
+      },
+    },
+    end: {
+      date: "2021-03-20T05:00:00.000Z",
+      time: {
+        hours: "07",
+        minutes: "00",
+        ap: "PM",
+        allday: false,
+      },
+    },
+    reminders: [],
+  },
+  {
+    id_: "872aca93-56fd-8561-a135-e69fgjy6824f",
+    kind: "calendar-event",
+    title: "Hairdresser",
+    description: "Redo coloration",
+    location: "hair Academy, 353 rue Orange",
+    creator: {
+      name: "Vanessa Chan",
+      userId: "009",
+    },
+    start: {
+      date: "2021-03-20T05:00:00.000Z",
+      time: {
+        hours: "08",
+        minutes: "00",
+        ap: "PM",
+        allday: false,
+      },
+    },
+    end: {
+      date: "2021-03-20T05:00:00.000Z",
+      time: {
+        hours: "09",
+        minutes: "00",
+        ap: "PM",
+        allday: false,
+      },
+    },
+    reminders: [],
+  },
 ];
 
 const app = express();
@@ -91,6 +181,9 @@ app
     res.status(200).json("Backend server is working");
   })
 
+  /***********************************************
+   * CREATE NEW EVENT
+   ***********************************************/
   .post("/newEvent", (req, res) => {
     user_events.push(req.body.form);
     console.log(user_events);
@@ -102,6 +195,9 @@ app
     });
   })
 
+  /***********************************************
+   * GET ALL USER EVENTS
+   ***********************************************/
   .get("/allEvents/:id", (req, res) => {
     res.status(200).json({
       status: 200,
@@ -110,24 +206,65 @@ app
     });
   })
 
+  /***********************************************
+   * GET ALL USER EVENTS THIS **MONTH**
+   ***********************************************/
   .get("/events/month/:month", (req, res) => {
-    if (req.params > 12) {
+    if (parseInt(req.params) > 12) {
       res.status(404).json({
         status: 404,
-        message: "There is a problem with your request!",
+        message: "Month invalid",
       });
     } else {
-      let test = {};
+      let dates = [];
       let result = user_events.filter(
         (ev) =>
           parseInt(ev.start.date.slice(5, 7).replace("0", "")) - 1 ===
           parseInt(req.params.month)
       );
-      res.status(200).json({
-        status: 200,
-        data: result,
-        message: "Month events",
-      });
+      if (result.length > 0) {
+        //Get all dates
+        result.map((ev) => {
+          if (!dates.includes(ev.start.date)) {
+            dates.push(ev.start.date);
+          }
+        });
+        //Sort dates
+        for (let i = 0; i < dates.length; i++) {
+          for (let j = 0; j < dates.length - 1; j++)
+            if (dates[j] > dates[j + 1]) {
+              let temp = dates[j];
+              dates[j] = dates[j + 1];
+              dates[j + 1] = temp;
+            }
+        }
+
+        /**Create a new object with dates and events
+         * { date: date,
+         *  events: []} */
+        let resultsSortedByDate = [];
+        dates.map((date) => {
+          let allEvents = [];
+          result.map((meeting) => {
+            if (meeting.start.date === date) {
+              allEvents.push(meeting);
+            }
+          });
+          resultsSortedByDate.push({ date: date, events: allEvents });
+        });
+
+        res.status(200).json({
+          status: 200,
+          data: resultsSortedByDate,
+          message: "Month events",
+        });
+      } else {
+        res.status(200).json({
+          status: 200,
+          data: [],
+          message: "Month events",
+        });
+      }
     }
   })
 
