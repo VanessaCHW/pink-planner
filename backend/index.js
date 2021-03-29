@@ -259,6 +259,8 @@ app
           message: "Month events",
         });
       } else {
+        //If there are no events this month
+        //send an empty array
         res.status(200).json({
           status: 200,
           data: [],
@@ -266,6 +268,32 @@ app
         });
       }
     }
+  })
+
+  /***********************************************
+   * GET ALL USER EVENTS THIS **DAY**
+   ***********************************************/
+  .get("/events/date/:date", (req, res) => {
+    // Parse Date
+    let searchedDate = new Date(
+      req.params.date.slice(0, 4),
+      req.params.date.slice(5, 7) - 1,
+      req.params.date.slice(8, 10)
+    );
+
+    // Find all events on that date
+    let result = user_events.filter(
+      (ev) =>
+        ev.start.date.slice(0, 10) === req.params.date.toString().slice(0, 10)
+    );
+
+    //Sort events by start time
+
+    res.status(200).json({
+      status: 200,
+      data: result,
+      message: "Date events",
+    });
   })
 
   .get("*", (req, res) =>
