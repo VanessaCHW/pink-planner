@@ -59,7 +59,7 @@ const CalendarView = () => {
           style={{ backgroundColor: "#b5cdfd" }}
           onClick={() => history.push(`/date/${format(new Date(), "y-MM-dd")}`)}
         >
-          Today
+          Day
         </TabItem>
       </Tabs>
       <MyCalendar updateCurrentMonth={updateCurrentMonth} />
@@ -80,15 +80,17 @@ const CalendarView = () => {
               history.push(`/date/${format(new Date(ev.date), "y-MM-dd")}`)
             }
           >
-            <DateBox style={{ background: dateColors[colorIndex++] }}>
+            <DateBox style={{ background: dateColors[colorIndex] }}>
               <div className="dayName">{format(new Date(ev.date), "EEE.")}</div>
               <div>{format(new Date(ev.date), "d")}</div>
             </DateBox>
             <DayEventsBox>
               {ev.events.map((meeting) => (
-                <EventTitle style={{ color: dateColors[colorIndex] }}>
-                  {meeting.title}
-                </EventTitle>
+                <div>
+                  <EventTitle style={{ color: dateColors[colorIndex++] }}>
+                    {meeting.title}
+                  </EventTitle>
+                </div>
               ))}
             </DayEventsBox>
           </EventBox>
@@ -143,6 +145,7 @@ const EventsSection = styled.div``;
 
 const EventBox = styled.div`
   display: flex;
+  border: none;
 `;
 const DateBox = styled.div`
   background-color: blue;
