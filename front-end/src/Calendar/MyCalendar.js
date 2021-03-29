@@ -23,7 +23,7 @@ const MyCalendar = ({ updateCurrentMonth }) => {
   };
 
   const tileContent = ({ date, view }) =>
-    view === "month" && date.getDay() === 2 ? <p>*</p> : null;
+    view === "month" && date.getDay() === 2 ? <p></p> : null;
 
   return (
     <Wrapper>
@@ -77,7 +77,7 @@ const Wrapper = styled.div`
   }
   .react-calendar__navigation {
     height: 2.5rem;
-    margin: 10px 0;
+    margin-bottom: 10px;
   }
 
   //Top (month and R/L buttons)
