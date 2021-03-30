@@ -8,6 +8,8 @@ export const COLORS = {
   gradientRoseanna: "linear-gradient(to left, #ffc3a0, #ffafbd)",
   gradientTranquil: "linear-gradient(to left, #eecda3, #ef629f)",
   gradientDisco: "linear-gradient(to right, #ba5370, #f4e2d8)",
+  gradientCalm:
+    "linear-gradient(90deg, rgba(152,182,252,1) 0%, rgba(109,231,244,1) 100%)",
 };
 
 export const HOURS = [
