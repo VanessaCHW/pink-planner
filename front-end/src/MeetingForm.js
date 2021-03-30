@@ -7,7 +7,6 @@ import { FiCalendar } from "react-icons/fi";
 import { BsArrowRight } from "react-icons/bs";
 import { GrLocation } from "react-icons/gr";
 import { RiNotification2Line } from "react-icons/ri";
-import { BiTime } from "react-icons/bi";
 import { useHistory } from "react-router";
 import { v4 as uuidv4 } from "uuid";
 
