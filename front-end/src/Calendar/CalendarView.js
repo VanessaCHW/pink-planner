@@ -47,7 +47,7 @@ const CalendarView = () => {
       .catch((error) => console.log("error!", error));
   }, [currentMonth]);
 
-  let colorIndex = 0;
+  let colorIndex = -1;
 
   return (
     <Wrapper>
@@ -80,14 +80,14 @@ const CalendarView = () => {
               history.push(`/date/${format(new Date(ev.date), "y-MM-dd")}`)
             }
           >
-            <DateBox style={{ background: dateColors[colorIndex] }}>
+            <DateBox style={{ background: dateColors[++colorIndex] }}>
               <div className="dayName">{format(new Date(ev.date), "EEE.")}</div>
               <div>{format(new Date(ev.date), "d")}</div>
             </DateBox>
             <DayEventsBox>
               {ev.events.map((meeting) => (
                 <div>
-                  <EventTitle style={{ color: dateColors[colorIndex++] }}>
+                  <EventTitle style={{ color: dateColors[colorIndex] }}>
                     {meeting.title}
                   </EventTitle>
                 </div>
