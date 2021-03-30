@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { COLORS } from "../Constants";
 import MyCalendar from "./MyCalendar";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { format } from "date-fns";
 
 import AddEventIcon from "../Components/AddEventIcon";
@@ -30,6 +30,7 @@ const dateColors = [
 
 const CalendarView = () => {
   const history = useHistory();
+  const [status, setStatus] = useState("loading");
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [MonthEvents, setMonthEvents] = useState([]);
 
@@ -37,12 +38,14 @@ const CalendarView = () => {
   const updateCurrentMonth = (month) => setCurrentMonth(month);
 
   useEffect(() => {
+    setStatus("loading");
     fetch(`/events/month/${currentMonth}`)
       .then((res) => res.json())
       .then((res) => {
         setMonthEvents(res.data);
         console.log(res);
         console.log(res.data);
+        setStatus("idle");
       })
       .catch((error) => console.log("error!", error));
   }, [currentMonth]);
@@ -63,39 +66,47 @@ const CalendarView = () => {
         </TabItem>
       </Tabs>
       <MyCalendar updateCurrentMonth={updateCurrentMonth} />
-      {MonthEvents.length === 0 ? (
-        <NoEventsSection>
-          <p>You have no upcoming events. </p>
-          <p>Start planning your month now!</p>
-          <AddEventButton>Add new event</AddEventButton>
-          <AddEventImg src="Startup.png" alt="Add fun activities" />
-        </NoEventsSection>
+
+      {status === "loading" ? (
+        <div>Loading</div>
       ) : (
-        <div></div>
+        <>
+          {MonthEvents.length === 0 ? (
+            <NoEventsSection>
+              <p>You have no upcoming events. </p>
+              <p>Start planning your month now!</p>
+              <AddEventButton>Add new event</AddEventButton>
+              <AddEventImg src="Startup.png" alt="Add fun activities" />
+            </NoEventsSection>
+          ) : null}
+          <EventsSection>
+            {MonthEvents.map((ev) => (
+              <EventBox
+                onClick={() =>
+                  history.push(`/date/${format(new Date(ev.date), "y-MM-dd")}`)
+                }
+              >
+                <DateBox style={{ background: dateColors[++colorIndex] }}>
+                  <div className="dayName">
+                    {format(new Date(ev.date), "EEE.")}
+                  </div>
+                  <div>{format(new Date(ev.date), "d")}</div>
+                </DateBox>
+                <DayEventsBox>
+                  {ev.events.map((meeting) => (
+                    <div>
+                      <EventTitle style={{ color: dateColors[colorIndex] }}>
+                        {meeting.title}
+                      </EventTitle>
+                    </div>
+                  ))}
+                </DayEventsBox>
+              </EventBox>
+            ))}
+          </EventsSection>
+        </>
       )}
-      <EventsSection>
-        {MonthEvents.map((ev) => (
-          <EventBox
-            onClick={() =>
-              history.push(`/date/${format(new Date(ev.date), "y-MM-dd")}`)
-            }
-          >
-            <DateBox style={{ background: dateColors[++colorIndex] }}>
-              <div className="dayName">{format(new Date(ev.date), "EEE.")}</div>
-              <div>{format(new Date(ev.date), "d")}</div>
-            </DateBox>
-            <DayEventsBox>
-              {ev.events.map((meeting) => (
-                <div>
-                  <EventTitle style={{ color: dateColors[colorIndex] }}>
-                    {meeting.title}
-                  </EventTitle>
-                </div>
-              ))}
-            </DayEventsBox>
-          </EventBox>
-        ))}
-      </EventsSection>
+
       <AddEventIcon />
     </Wrapper>
   );

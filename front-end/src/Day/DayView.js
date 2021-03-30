@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import { GrLocation } from "react-icons/gr";
 import { BiEditAlt } from "react-icons/bi";
 import { RiDeleteBinLine } from "react-icons/ri";
+import NoEventToday from "./NoEventToday";
+import AddEventIcon from "../Components/AddEventIcon";
 
 const dayColors = [
   "rgb(254,182,185)",
@@ -24,6 +26,7 @@ const dayColors = [
 
 const DayView = () => {
   const [dayEvents, setDayEvents] = useState([]);
+  const [status, setStatus] = useState("loading");
   const history = useHistory();
   const params = useParams();
   const today = new Date(
@@ -35,12 +38,14 @@ const DayView = () => {
   let colorIndex = 0;
 
   useEffect(() => {
+    setStatus("loading");
     fetch(`/events/date/${params.date}`)
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
         console.log(res.data);
         setDayEvents(res.data);
+        setStatus("idle");
       })
       .catch((error) => console.log("error!", error));
   }, []);
@@ -48,6 +53,7 @@ const DayView = () => {
   return (
     <Wrapper>
       <div onClick={() => history.goBack()}>Back</div>
+      <AddEventIcon />
       <Tabs>
         <TabItem
           onClick={() => history.push("/calendar-month")}
@@ -56,11 +62,7 @@ const DayView = () => {
           month
         </TabItem>
         <TabItem style={{ backgroundColor: "#b5cdfd" }}>week</TabItem>
-        <TabItem
-          onClick={() => history.push(`/date/${format(new Date(), "y-MM-dd")}`)}
-        >
-          Day
-        </TabItem>
+        <TabItem>Day</TabItem>
       </Tabs>
       <Header>
         <DateSection>
@@ -84,54 +86,67 @@ const DayView = () => {
           ></Path>
         </svg>
       </Header>
-      <ContentSection>
-        {dayEvents.map((dayEvent) => (
-          <SingleEventBox>
-            <TimeBox>
-              {dayEvent.start.time.allday ? (
-                <div>All day</div>
-              ) : (
-                <>
-                  <div style={{ fontWeight: "500" }}>
-                    {dayEvent.start.time.hours}:{dayEvent.start.time.minutes}{" "}
-                    {dayEvent.start.time.ap}
-                  </div>
-                  <div style={{ fontWeight: "300" }}>
-                    {dayEvent.end.time.hours}:{dayEvent.end.time.minutes}{" "}
-                    {dayEvent.end.time.ap}
-                  </div>
-                </>
-              )}
-            </TimeBox>
-            <div className="RightBox">
-              <EventContentBox
-                style={{ borderLeft: `5px solid ${dayColors[colorIndex++]}` }}
-              >
-                <div className="nameNdesc">
-                  <EventTitle>{dayEvent.title}</EventTitle>
-                  {dayEvent.description ? (
-                    <EventDescr>{dayEvent.description}</EventDescr>
-                  ) : null}
-                </div>
-                {dayEvent.location ? (
-                  <EventLocation>
-                    <GrLocation size="13" /> {dayEvent.location}
-                  </EventLocation>
-                ) : null}
-              </EventContentBox>
 
-              <EventButtonBox>
-                <EventButtons>
-                  <BiEditAlt />
-                </EventButtons>
-                <EventButtons>
-                  <RiDeleteBinLine />
-                </EventButtons>
-              </EventButtonBox>
-            </div>
-          </SingleEventBox>
-        ))}
-      </ContentSection>
+      {status === "loading" ? (
+        <div>Loading</div>
+      ) : (
+        <ContentSection>
+          {dayEvents.length === 0 ? (
+            <NoEventToday />
+          ) : (
+            <>
+              {dayEvents.map((dayEvent) => (
+                <SingleEventBox>
+                  <TimeBox>
+                    {dayEvent.start.time.allday ? (
+                      <div>All day</div>
+                    ) : (
+                      <>
+                        <div style={{ fontWeight: "500" }}>
+                          {dayEvent.start.time.hours}:
+                          {dayEvent.start.time.minutes} {dayEvent.start.time.ap}
+                        </div>
+                        <div style={{ fontWeight: "300" }}>
+                          {dayEvent.end.time.hours}:{dayEvent.end.time.minutes}{" "}
+                          {dayEvent.end.time.ap}
+                        </div>
+                      </>
+                    )}
+                  </TimeBox>
+                  <div className="RightBox">
+                    <EventContentBox
+                      style={{
+                        borderLeft: `5px solid ${dayColors[colorIndex++]}`,
+                      }}
+                    >
+                      <div className="nameNdesc">
+                        <EventTitle>{dayEvent.title}</EventTitle>
+                        {dayEvent.description ? (
+                          <EventDescr>{dayEvent.description}</EventDescr>
+                        ) : null}
+                      </div>
+                      {dayEvent.location ? (
+                        <EventLocation>
+                          <GrLocation size="13" /> {dayEvent.location}
+                        </EventLocation>
+                      ) : null}
+                    </EventContentBox>
+
+                    <EventButtonBox>
+                      <EventButtons>
+                        <BiEditAlt />
+                      </EventButtons>
+                      <EventButtons>
+                        <RiDeleteBinLine />
+                      </EventButtons>
+                    </EventButtonBox>
+                  </div>
+                </SingleEventBox>
+              ))}
+            </>
+          )}
+        </ContentSection>
+      )}
     </Wrapper>
   );
 };
