@@ -17,14 +17,15 @@ const AddEventIcon = () => {
   );
 };
 const NewEventIcon = styled.button`
-  font-size: 4rem;
+  font-size: 3rem;
+  font-weight: 200;
   line-height: 1rem;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50px;
   border: none;
   color: white;
-  background-color: pink;
+  background-color: rgb(222, 87, 102);
   position: fixed;
   bottom: 10px;
   right: 10px;
