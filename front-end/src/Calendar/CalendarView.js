@@ -54,6 +54,7 @@ const CalendarView = () => {
 
   return (
     <Wrapper>
+      <div onClick={() => history.push("/")}>Home</div>
       <div onClick={() => history.goBack()}>Back</div>
       <Tabs>
         <TabItem onClick={() => history.push("/calendar-month")}>month</TabItem>
