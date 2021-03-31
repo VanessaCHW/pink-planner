@@ -4771,3 +4771,16 @@ node_modules/uuid/dist/umd/uuidv5.min.js
 node_modules/uuid/dist/umd/uuidValidate.min.js
 node_modules/uuid/dist/umd/uuidVersion.min.js
 backend/yarn-error.log
+.env
+node_modules/dotenv/lib/cli-options.js
+node_modules/dotenv/lib/env-options.js
+node_modules/dotenv/lib/main.js
+node_modules/dotenv/types/index.d.ts
+node_modules/dotenv/types/test.ts
+node_modules/dotenv/types/tsconfig.json
+node_modules/dotenv/types/tslint.json
+node_modules/dotenv/README.md
+node_modules/.bin/uuid.cmd
+node_modules/dotenv/CHANGELOG.md
+node_modules/dotenv/config.js
+node_modules/dotenv/LICENSE
