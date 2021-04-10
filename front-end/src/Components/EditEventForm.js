@@ -1,45 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { COLORS, HOURS, MINUTES } from "./Constants";
-import Calendar from "react-calendar";
+import { COLORS } from "../Constants";
 import { format } from "date-fns";
 import { FiCalendar } from "react-icons/fi";
 import { BsArrowRight } from "react-icons/bs";
 import { GrLocation } from "react-icons/gr";
 import { RiNotification2Line } from "react-icons/ri";
-import { useHistory } from "react-router";
-import { v4 as uuidv4 } from "uuid";
+import { GrClose } from "react-icons/gr";
+import { FcCheckmark } from "react-icons/fc";
 
-let initialEvent = {
-  id_: uuidv4(),
-  kind: "calendar-event",
-  title: "",
-  description: "",
-  location: "",
-  creator: {
-    name: "Vanessa Chan",
-    userId: "009",
-  },
-  start: {
-    date: null,
-    time: { hours: null, minutes: null, ap: null, allday: false },
-  },
-  end: {
-    date: null,
-    time: { hours: null, minutes: null, ap: null, allday: false },
-  },
-  reminders: [
-    /* {
-      method: null,
-      minutes: null,
-    },*/
-  ],
-};
+import SmallLoadingIcon from "./SmallLoadingIcon";
+import NewEventCalendar from "./NewEventCalendar";
+import EditEventTime from "./EditEventTime";
 
-const MeetingForm = () => {
-  const history = useHistory();
-  const [form, setForm] = useState(initialEvent);
+const EditEventForm = ({ closeDialog, refreshEvents, currentEvent }) => {
+  const [form, setForm] = useState(currentEvent);
   const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [status, setStatus] = useState("idle");
 
   useEffect(() => {
     if (form.title != null && form.start.date != null) {
@@ -64,16 +41,25 @@ const MeetingForm = () => {
     }
   }, [form]);
 
+  useEffect(() => {
+    let startDate = new Date(currentEvent.start.date);
+    let formatted = format(startDate, "EEE. MMM. d, y");
+    setDisplayStartDate(formatted);
+    let endDate = new Date(currentEvent.end.date);
+    let formatted2 = format(endDate, "EEE. MMM. d, y");
+    setDisplayEndDate(formatted2);
+  }, []);
+
   const handleTitle = (value) => setForm({ ...form, title: value });
   const handleDescription = (value) => setForm({ ...form, description: value });
   const handleLocation = (value) => setForm({ ...form, location: value });
 
-  const CreateEvent = (event) => {
+  const UpdateEvent = (event) => {
     event.preventDefault();
-    console.log(form);
+    setStatus("loading");
 
-    fetch("/newEvent", {
-      method: "POST",
+    fetch("/editEvent", {
+      method: "PUT",
       body: JSON.stringify({ form }),
       headers: {
         Accept: "application/json",
@@ -82,9 +68,15 @@ const MeetingForm = () => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
+        refreshEvents();
+        setStatus("updated");
+        setButtonDisabled(true);
       })
-      .catch((error) => console.log("error!", error));
+      .catch((error) => {
+        console.log("error!", error);
+        setStatus("error");
+        setButtonDisabled(true);
+      });
   };
 
   /******************************* */
@@ -122,7 +114,6 @@ const MeetingForm = () => {
   const submitStartDate = (event) => {
     event.preventDefault();
     document.getElementById("CalendarFormStart").style.visibility = "hidden";
-    console.log("Calendar", CalendarStartDate);
 
     let formatted = format(CalendarStartDate, "EEE. MMM. d, y");
     setDisplayStartDate(formatted);
@@ -144,80 +135,20 @@ const MeetingForm = () => {
     }
   };
 
-  /******************************************
-   * TIME FIELD
-   ******************************************/
-  const onStartHourChange = (value) => {
-    setForm({
-      ...form,
-      start: { ...form.start, time: { ...form.start.time, hours: value } },
-    });
-  };
-  const onStartMinChange = (value) => {
-    setForm({
-      ...form,
-      start: { ...form.start, time: { ...form.start.time, minutes: value } },
-    });
-  };
-  const onStartAPChange = (value) => {
-    setForm({
-      ...form,
-      start: { ...form.start, time: { ...form.start.time, ap: value } },
-    });
-  };
-  const onEndHourChange = (value) => {
-    setForm({
-      ...form,
-      end: { ...form.end, time: { ...form.end.time, hours: value } },
-    });
-  };
-  const onEndMinChange = (value) => {
-    setForm({
-      ...form,
-      end: { ...form.end, time: { ...form.end.time, minutes: value } },
-    });
-  };
-  const onEndAPChange = (value) => {
-    setForm({
-      ...form,
-      end: { ...form.end, time: { ...form.end.time, ap: value } },
-    });
-  };
-
-  const allDaySelect = (checked) => {
-    if (checked) {
-      setForm({
-        ...form,
-        start: { ...form.start, time: { ...form.start.time, allday: true } },
-        end: { ...form.end, time: { ...form.end.time, allday: true } },
-      });
-    } else {
-      setForm({
-        ...form,
-        start: { ...form.start, time: { ...form.start.time, allday: false } },
-        end: { ...form.end, time: { ...form.end.time, allday: false } },
-      });
-    }
-  };
-
   return (
     <div>
-      <div>
-        <button onClick={() => history.goBack()}>x</button>
-        <button onClick={(ev) => CreateEvent(ev)} disabled={buttonDisabled}>
-          Create event
-        </button>
-      </div>
       <form>
         <Top>
           <Title
             type="text"
             placeholder="Your event title"
+            defaultValue={form.title}
             onChange={(ev) => handleTitle(ev.target.value)}
           />
           <Description
             type="text"
             placeholder="What will happen?"
+            defaultValue={form.description}
             onChange={(ev) => handleDescription(ev.target.value)}
           />
         </Top>
@@ -230,6 +161,7 @@ const MeetingForm = () => {
                 placeholder="Start date"
                 onClick={() => startField()}
                 value={displayStartDate}
+                defaultValue={displayStartDate}
               />
               <FiCalendar color="#b3b3b3" />
             </InputBorder>
@@ -239,17 +171,15 @@ const MeetingForm = () => {
                 placeholder="End date"
                 onClick={() => endField()}
                 value={displayEndDate}
+                defaultValue={displayEndDate}
               />
               <FiCalendar color="#b3b3b3" />
             </InputBorder>
           </div>
           <CalendarForm id="CalendarFormStart">
-            <Calendar
+            <NewEventCalendar
               onChange={onStartCalendarChange}
-              defaultView="month"
               value={CalendarStartDate}
-              prev2Label={null}
-              next2Label={null}
               onClickDay={(value, event) => selectStartDate(value, event)}
             />
             <div className="ButtonBox">
@@ -257,12 +187,9 @@ const MeetingForm = () => {
             </div>
           </CalendarForm>
           <CalendarForm id="CalendarFormEnd">
-            <Calendar
+            <NewEventCalendar
               onChange={onEndCalendarChange}
-              defaultView="month"
               value={CalendarEndDate}
-              prev2Label={null}
-              next2Label={null}
               onClickDay={(value, event) => selectEndDate(value, event)}
             />
             <div className="ButtonBox">
@@ -271,58 +198,7 @@ const MeetingForm = () => {
           </CalendarForm>
         </Section>
         <Section>
-          <TimeSection>
-            <Label className="TimeLabel">Time</Label>{" "}
-            <div className="AllDaySection">
-              <input
-                type="checkbox"
-                className="checkBoxBox"
-                onChange={(ev) => allDaySelect(ev.target.checked)}
-              />
-              <label>All-day</label>
-            </div>
-          </TimeSection>
-          <TimeRange>
-            <Select onChange={(ev) => onStartHourChange(ev.target.value)}>
-              <option hidden></option>
-              {HOURS.map((hour) => (
-                <option>{hour}</option>
-              ))}
-            </Select>
-            :
-            <Select onChange={(ev) => onStartMinChange(ev.target.value)}>
-              <option hidden></option>
-              {MINUTES.map((min) => (
-                <option>{min}</option>
-              ))}
-            </Select>
-            <Select onChange={(ev) => onStartAPChange(ev.target.value)}>
-              <option hidden></option>
-              <option>AM</option>
-              <option>PM</option>
-            </Select>
-            <Arrow>
-              <BsArrowRight />
-            </Arrow>
-            <Select onChange={(ev) => onEndHourChange(ev.target.value)}>
-              <option hidden></option>
-              {HOURS.map((hour) => (
-                <option>{hour}</option>
-              ))}
-            </Select>
-            :
-            <Select onChange={(ev) => onEndMinChange(ev.target.value)}>
-              <option hidden></option>
-              {MINUTES.map((min) => (
-                <option>{min}</option>
-              ))}
-            </Select>
-            <Select onChange={(ev) => onEndAPChange(ev.target.value)}>
-              <option hidden></option>
-              <option>AM</option>
-              <option>PM</option>
-            </Select>
-          </TimeRange>
+          <EditEventTime form={form} setForm={setForm} />
         </Section>
         <Section>
           <Label>Location</Label>
@@ -332,6 +208,7 @@ const MeetingForm = () => {
               type="text"
               placeholder="Add location"
               onChange={(ev) => handleLocation(ev.target.value)}
+              defaultValue={currentEvent.location}
             />
           </div>
         </Section>
@@ -341,6 +218,28 @@ const MeetingForm = () => {
           <SectionInput2 type="text" placeholder="Add notification" />
         </Section>
       </form>
+      <ActionsSection>
+        <ButtonClose onClick={closeDialog}>
+          <GrClose />
+        </ButtonClose>
+        <ButtonCreate
+          onClick={(ev) => UpdateEvent(ev)}
+          disabled={buttonDisabled}
+        >
+          {status === "idle" ? (
+            "Update event"
+          ) : status === "loading" ? (
+            <SmallLoadingIcon />
+          ) : (
+            "Update event"
+          )}
+        </ButtonCreate>
+      </ActionsSection>
+      {status === "updated" ? (
+        <ConfirmationBox>
+          <FcCheckmark /> Your event was updated!
+        </ConfirmationBox>
+      ) : null}
     </div>
   );
 };
@@ -353,6 +252,40 @@ const Top = styled.div`
   background-color: #f6f7f6;
   padding-top: 50px;
   padding-bottom: 30px;
+`;
+const ActionsSection = styled.div`
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 15px;
+  width: 100vw;
+`;
+const ButtonCreate = styled.button`
+  border: none;
+  background-color: ${COLORS.button2};
+  color: ${COLORS.text1};
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0 10px;
+  width: 160px;
+  height: 40px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  &:disabled {
+    opacity: 0.3;
+  }
+`;
+
+const ButtonClose = styled.button`
+  border: none;
+  background-color: ${COLORS.button1};
+  color: ${COLORS.text2};
+  font-size: 1.3rem;
+  line-height: 1rem;
+  font-weight: 300;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 50px;
 `;
 
 const Title = styled.input`
@@ -404,20 +337,6 @@ const Label = styled.label`
   padding-bottom: 10px;
   display: block;
   font-size: 1.2rem;
-`;
-
-const TimeSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  .TimeLabel {
-    display: inline-block;
-  }
-  .AllDaySection {
-    font-size: 1.2rem;
-  }
-  .checkBoxBox {
-    margin: 0 5px;
-  }
 `;
 
 const InputBorder = styled.div`
@@ -472,21 +391,11 @@ const CalendarForm = styled.div`
   }
 `;
 
-const TimeRange = styled.div`
-  display: flex;
-  align-items: center;
+const ConfirmationBox = styled.div`
+  margin: 20px;
+  border: 1px solid #00cc63;
+  border-radius: 4px;
+  background-color: #e6fff2;
+  padding: 5px 20px;
 `;
-const Arrow = styled.div`
-  padding: 0 10px;
-`;
-
-const Select = styled.select`
-  appearance: none;
-  padding: 1px 6px;
-  margin: 0 2px;
-  font-size: 1.1rem;
-  border: none;
-  background-color: #f2f2f2;
-`;
-
-export default MeetingForm;
+export default EditEventForm;

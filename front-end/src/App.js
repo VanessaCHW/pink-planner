@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Homepage from "./Homepage/Homepage";
 import CalendarView from "./Calendar/CalendarView";
 import DayView from "./Day/DayView";
-import MeetingForm from "./MeetingForm";
+import WeekView from "./Week/WeekView";
 
 function App() {
   return (
@@ -21,8 +21,8 @@ function App() {
         <Route exact path="/date/:date">
           <DayView />
         </Route>
-        <Route exact path="/new">
-          <MeetingForm />
+        <Route exact path="/week/:date">
+          <WeekView />
         </Route>
       </Switch>
     </Router>

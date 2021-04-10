@@ -1,8 +1,10 @@
 export const COLORS = {
   background: "#ECF0F8",
+  button1: "rgb(164,168,242)",
+  button2: "rgb(184,233,134)",
   overlay1: "#FFFFFF",
-  text1: "#black",
-  text2: "white",
+  text1: "#000000",
+  text2: "#FFFFFF",
   icon1: "#787ab8",
   mainBlue: "#567BF3",
   gradientRoseanna: "linear-gradient(to left, #ffc3a0, #ffafbd)",
@@ -12,8 +14,27 @@ export const COLORS = {
     "linear-gradient(90deg, rgba(152,182,252,1) 0%, rgba(109,231,244,1) 100%)",
 };
 
+export const dateColors = [
+  "rgb(252,92,99)",
+  "rgb(222,87,102)",
+  "rgb(150,71,120)",
+  "rgb(115,64,129)",
+  "rgb(81,57,137)",
+  "rgb(48,49,145)",
+  "rgb(252,92,99)",
+  "rgb(222,87,102)",
+  "rgb(150,71,120)",
+  "rgb(115,64,129)",
+  "rgb(81,57,137)",
+  "rgb(48,49,145)",
+  "rgb(252,92,99)",
+  "rgb(222,87,102)",
+  "rgb(150,71,120)",
+  "rgb(115,64,129)",
+  "rgb(81,57,137)",
+  "rgb(48,49,145)",
+];
 export const HOURS = [
-  "00",
   "01",
   "02",
   "03",
@@ -41,3 +62,28 @@ export const MINUTES = [
   "50",
   "55",
 ];
+
+export const INITIAL_EVENT = {
+  kind: "calendar-event",
+  title: "",
+  description: "",
+  location: "",
+  creator: {
+    name: "Vanessa Chan",
+    userId: "009",
+  },
+  start: {
+    date: null,
+    time: { hours: null, minutes: null, ap: null, allday: false },
+  },
+  end: {
+    date: null,
+    time: { hours: null, minutes: null, ap: null, allday: false },
+  },
+  reminders: [
+    /* {
+          method: null,
+          minutes: null,
+        },*/
+  ],
+};

@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import styled from "styled-components";
 import { COLORS } from "../Constants";
-import { format } from "date-fns";
 import { GrLocation } from "react-icons/gr";
-import { BiEditAlt } from "react-icons/bi";
-import { RiDeleteBinLine } from "react-icons/ri";
 import NoEventToday from "./NoEventToday";
-import AddEventIcon from "../Components/AddEventIcon";
+import { AiOutlineHome } from "react-icons/ai";
+import { BiArrowBack } from "react-icons/bi";
+import NewEventDialog from "../Components/NewEventDialog";
+import DeleteEventDialog from "../Components/DeleteEventDialog";
+import EditEventDialog from "../Components/EditEventDialog";
+import LoadingIcon from "../Components/LoadingIcon";
+import DateSection from "./DateSection";
 
 const dayColors = [
   "rgb(254,182,185)",
@@ -42,55 +45,50 @@ const DayView = () => {
     fetch(`/events/date/${params.date}`)
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
-        console.log(res.data);
         setDayEvents(res.data);
         setStatus("idle");
       })
       .catch((error) => console.log("error!", error));
-  }, []);
+  }, [params]);
+
+  const getDayEventsAfterDeleteAdd = async () => {
+    setStatus("loading");
+    await fetch(`/events/date/${params.date}`)
+      .then((res) => res.json())
+      .then((res) => {
+        setDayEvents(res.data);
+        setStatus("idle");
+      })
+      .catch((error) => console.log("error!", error));
+  };
 
   return (
     <Wrapper>
-      <div onClick={() => history.push("/")}>Home</div>
-      <div onClick={() => history.goBack()}>Back</div>
-      <AddEventIcon />
+      <NewEventDialog refreshEvents={getDayEventsAfterDeleteAdd} />
       <Tabs>
+        <NavIcon>
+          <AiOutlineHome onClick={() => history.push("/")} size={30} />
+        </NavIcon>
+        <NavIcon>
+          <BiArrowBack onClick={() => history.goBack()} size={30} />
+        </NavIcon>
         <TabItem
           onClick={() => history.push("/calendar-month")}
           style={{ backgroundColor: "#b5cdfd" }}
         >
           month
         </TabItem>
-        <TabItem style={{ backgroundColor: "#b5cdfd" }}>week</TabItem>
+        <TabItem
+          style={{ backgroundColor: "#b5cdfd" }}
+          onClick={() => history.push(`/week/${params.date}`)}
+        >
+          week
+        </TabItem>
         <TabItem>Day</TabItem>
       </Tabs>
-      <Header>
-        <DateSection>
-          <DateNumber>{format(today, "dd")}</DateNumber>
-          <DateRightSection>
-            <div>{format(today, "MMMM")}</div>
-            <div>{format(today, "Y")}</div>
-          </DateRightSection>
-        </DateSection>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="rgba(152,182,252,1)" />
-              <stop offset="100%" stopColor="rgba(109,231,244,1)" />
-            </linearGradient>
-          </defs>
-          <Path
-            fill="#0099ff"
-            fill-opacity="1"
-            d="M0,96L48,106.7C96,117,192,139,288,149.3C384,160,480,160,576,154.7C672,149,768,139,864,112C960,85,1056,43,1152,48C1248,53,1344,107,1392,133.3L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
-          ></Path>
-        </svg>
-      </Header>
+      <DateSection today={today} />
 
-      {status === "loading" ? (
-        <div>Loading</div>
-      ) : (
+      {status === "loading" ? null : (
         <ContentSection>
           {dayEvents.length === 0 ? (
             <NoEventToday />
@@ -135,10 +133,16 @@ const DayView = () => {
 
                     <EventButtonBox>
                       <EventButtons>
-                        <BiEditAlt />
+                        <EditEventDialog
+                          currentEvent={dayEvent}
+                          refreshEvents={getDayEventsAfterDeleteAdd}
+                        />
                       </EventButtons>
                       <EventButtons>
-                        <RiDeleteBinLine />
+                        <DeleteEventDialog
+                          eventId={dayEvent._id}
+                          refreshEvents={getDayEventsAfterDeleteAdd}
+                        />
                       </EventButtons>
                     </EventButtonBox>
                   </div>
@@ -195,7 +199,7 @@ const EventButtonBox = styled.div`
   align-items: center;
   padding-right: 5px;
 `;
-const EventButtons = styled.button`
+const EventButtons = styled.div`
   background: transparent;
   border: none;
   font-size: 1.3rem;
@@ -207,12 +211,19 @@ const Wrapper = styled.div`
   min-height: 100vh;
   background: ${COLORS.background};
 `;
-const Header = styled.div`
-  position: relative;
-`;
+
 const Tabs = styled.div`
   display: flex;
   flex-direction: row;
+  margin-top: 2px;
+  margin-right: 3px;
+`;
+const NavIcon = styled.div`
+  padding: 0 5px;
+  color: rgb(222, 87, 102);
+  border: 1px solid rgb(222, 87, 102);
+  border-radius: 4px;
+  margin: 0 3px;
 `;
 const TabItem = styled.div`
   flex-grow: 1;
@@ -226,33 +237,6 @@ const TabItem = styled.div`
   border-bottom: none;
   padding: 6px 0;
   font-size: 1.2rem;
-`;
-
-const DateSection = styled.div`
-  color: white;
-  display: flex;
-  flex-direction: row;
-  background: ${COLORS.gradientCalm};
-  justify-content: center;
-  padding-top: 20px;
-`;
-const DateNumber = styled.div`
-  font-size: 5rem;
-  font-weight: 300;
-  padding: 0 20px;
-  border-right: solid 1px white;
-  box-sizing: border-box;
-  line-height: 4rem;
-`;
-const DateRightSection = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  font-size: 1.5rem;
-  padding: 0 20px;
-`;
-const Path = styled.path`
-  fill: url(#gradient);
 `;
 
 const ContentSection = styled.div`

@@ -1,14 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
-import picture from "./picture.png";
+import picture from "./img.png";
 
 const NoEventToday = () => {
   let history = useHistory();
 
   return (
     <Wrapper>
-      <p>Get a clear view of the day ahead!</p>
+      <p>You have nothing planned for the day!</p>
       <p className="TapMsg">Tap " + " to add a task.</p>
       <Img src={picture} />
     </Wrapper>

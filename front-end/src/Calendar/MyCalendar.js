@@ -17,7 +17,6 @@ const MyCalendar = ({ updateCurrentMonth }) => {
   let history = useHistory();
 
   const handleClickDate = (value) => {
-    console.log("Clicked", value, "formatted: ", format(value, "y-MM-dd"));
     let formattedDate = format(value, "y-MM-dd");
     history.push(`/date/${formattedDate}`);
   };
@@ -35,7 +34,6 @@ const MyCalendar = ({ updateCurrentMonth }) => {
         prev2Label={null}
         next2Label={null}
         onClickDay={(value, event) => handleClickDate(value, event)}
-        onClick={(value, event) => console.log(value, event)}
         onActiveStartDateChange={({ activeStartDate, value, view }) => {
           updateCurrentMonth(activeStartDate.getMonth());
         }}
