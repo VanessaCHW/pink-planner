@@ -28,4 +28,9 @@ html, div, span, applet, object, iframe,
     text {
         font-family: 'Roboto', sans-serif;
     }
+
+    body {
+        background-color: ${COLORS.background};
+
+    }
 `;
