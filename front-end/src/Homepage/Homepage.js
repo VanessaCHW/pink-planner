@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { GoCalendar } from "react-icons/go";
 import { BiCalendarWeek, BiTimer } from "react-icons/bi";
 import { MdToday } from "react-icons/md";
+import NewsFeed from "./NewsFeed";
 import plannerLogo from "./planner_logo.png";
 import NewEventDialog from "../Components/NewEventDialog";
 
@@ -15,6 +16,7 @@ const Homepage = () => {
 
   const [dayEvents, setDayEvents] = useState([]);
   const [status, setStatus] = useState("loading");
+  //const [articles, setArticles] = useState([]);
 
   useEffect(() => {
     setStatus("loading");
@@ -27,6 +29,28 @@ const Homepage = () => {
       })
       .catch((error) => console.log("error!", error));
   }, []);
+
+  /* useEffect(() => {
+    fetch(
+      "https://newscatcher.p.rapidapi.com/v1/latest_headlines?lang=en&country=CA&media=True",
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key":
+            "cd810d4447msh7f9c37965b4af6bp11b0cbjsn16e5607eb462",
+          "x-rapidapi-host": "newscatcher.p.rapidapi.com",
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+       setArticles(response);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);*/
 
   let greeting = "";
   if (today.getHours() < 12) {
@@ -95,6 +119,7 @@ const Homepage = () => {
           <IconText>Weather</IconText>
         </ActionIcon>
       </ActionSec>
+      <NewsFeed />
     </Wrapper>
   );
 };
