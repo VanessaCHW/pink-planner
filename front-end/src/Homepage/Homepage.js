@@ -9,7 +9,7 @@ import { MdToday } from "react-icons/md";
 import NewsFeed from "./NewsFeed";
 import plannerLogo from "./planner_logo.png";
 import NewEventDialog from "../Components/NewEventDialog";
-
+import rapidKey from "./key";
 const Homepage = () => {
   const today = new Date();
   const history = useHistory();
@@ -37,7 +37,7 @@ const Homepage = () => {
         method: "GET",
         headers: {
           "x-rapidapi-key":
-            "cd810d4447msh7f9c37965b4af6bp11b0cbjsn16e5607eb462",
+            rapidKey,
           "x-rapidapi-host": "google-news.p.rapidapi.com",
         },
       }
