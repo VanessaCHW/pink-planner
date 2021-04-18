@@ -1,137 +1,167 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { COLORS } from "../Constants";
+import { dayColors } from "../Constants";
 
-const articles = {
-  status: "ok",
-  articles: [
-    {
-      summary:
-        "As COVID-19 public safety measures continue, the City of Penticton has fast-tracked their plan to expand patio spaces for downtown businesses on the 200 block of Martin Street. 'We are extending the patio space so that restaurants along this block can extend their patios and allow more people to enjoy more outdoor dining,' said Carly Lewis, the City of Penticton's economic development manager.The extra patio space was already planned but was moved up to help mitigate some of the lost revenue due to the shutdown of indoor dining.",
-      country: "CA",
-      author: "Darrian Matassa-Fung",
-      link: "https://globalnews.ca/news/7765122/penticton-covid-patio-permits/",
-      language: "en",
-      media:
-        "https://globalnews.ca/wp-content/uploads/2021/04/PATIO-PLAN-THUMB-FOR-DAL-e1618616736338.jpg?quality=85&strip=all&w=720&h=379&crop=1",
-      title:
-        "City of Penticton fast-tracks permits for extra patio space amid indoor dining shutdown",
-      media_content:
-        "https://globalnews.ca/wp-content/uploads/2021/04/PATIO-PLAN-THUMB-FOR-DAL-e1618616736338.jpg?quality=85&strip=all",
-      clean_url: "globalnews.ca",
-      rights: "globalnews.ca",
-      rank: "893",
-      topic: "news",
-      published_date: "2021-04-17 00:15:00",
-      _id: "1cf99e61eab2e1da0ddc383300ac503e",
+let googleNews = [
+  {
+    id:
+      "CBMiXWh0dHBzOi8vd3d3LmNiYy5jYS9uZXdzL2NhbmFkYS9tb250cmVhbC9jb3ZpZC0xOS1pbi1xdWViZWMtbmVlZC10by1rbm93LWFwcmlsLTE3LTE4LTEuNTk5MDg2MtIBIGh0dHBzOi8vd3d3LmNiYy5jYS9hbXAvMS41OTkwODYy",
+    title: "COVID-19 in Quebec: What you need to know this weekend - CBC.ca",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMiXWh0dHBzOi8vd3d3LmNiYy5jYS9uZXdzL2NhbmFkYS9tb250cmVhbC9jb3ZpZC0xOS1pbi1xdWViZWMtbmVlZC10by1rbm93LWFwcmlsLTE3LTE4LTEuNTk5MDg2MtIBIGh0dHBzOi8vd3d3LmNiYy5jYS9hbXAvMS41OTkwODYy?oc=5",
+    published: "Sat, 17 Apr 2021 12:20:13 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://www.cbc.ca",
+      title: "CBC.ca",
     },
-    {
-      summary:
-        "Checkpoints will be used to monitor movements. Exceptions will be made for people travelling for work, medical care or the movement of goods. As of Monday, travel between the Quevec and Ontario will be restricted with police checkpoints to monitor movements. Photo by Graham Hughes /THE CANADIAN PRESS QUEBEC — The Legault government has responded to Ontario's decision to close its border Monday by doing the same thing in a bid to curb the spread of COVID-19 between the provinces. And Premier François Legault has pledged to fully co-operate with the government of Ontario and Premier Doug Ford 'to ensure the safety of our citizens.",
-      country: "CA",
-      author: "Philip Authier, Montreal Gazette",
-      link:
-        "https://montrealgazette.com/news/quebec/quebec-ontario-border-will-close-monday-as-provinces-battle-variants",
-      language: "en",
-      media:
-        "https://smartcdn.prod.postmedia.digital/montrealgazette/wp-content/uploads/2021/04/covid-que-20200329.jpg",
-      title:
-        "Quebec-Ontario border will close Monday as provinces battle variants",
-      media_content: null,
-      clean_url: "montrealgazette.com",
-      rights: "montrealgazette.com",
-      rank: "3123",
-      topic: "news",
-      published_date: "2021-04-17 00:13:27",
-      _id: "7afad5e29e487fba56173e6fef9b89ca",
-    },
-    {
-      summary:
-        "The Blue Jays entered spring training with one of their deepest rosters in recent memory. They were built to withstand some of the inevitable injuries that would soon follow, but whether they will be able to survive upwards of 10 or more remains to be seen.Toronto's roster has been decimated in recent weeks by a series of setbacks. The medical report is starting to become so long that it could field its own team and every day seems to find the Jays dealing with another round of ailments. Strained obliques, sore quads, wonky elbows, even a positive COVID-19 test, the list goes on and on.",
-      country: "CA",
-      author: "Gregor Chisholm - Baseball Columnist",
-      link:
-        "https://www.thestar.com/sports/bluejays/opinion/2021/04/16/the-next-man-up-approach-is-keeping-the-blue-jays-from-sliding-down-the-standings.html",
-      language: "en",
-      media:
-        "https://images.thestar.com/VWwaF1z1PV_ljtkry5ch-eN0Keo=/1200x800/smart/filters:cb(1618618238537)/https://www.thestar.com/content/dam/thestar/sports/bluejays/opinion/2021/04/16/the-next-man-up-approach-is-keeping-the-blue-jays-from-sliding-down-the-standings/pearson.jpg",
-      title:
-        "Gregor Chisholm: The next-man-up approach is keeping the Blue Jays from sliding down the standings",
-      media_content:
-        "https://www.thestar.com/content/dam/thestar/sports/bluejays/opinion/2021/04/16/the-next-man-up-approach-is-keeping-the-blue-jays-from-sliding-down-the-standings/pearson.jpg",
-      clean_url: "thestar.com",
-      rights:
-        "© Copyright 1996 - 2020 Toronto Star Newspapers Limited. All Rights Reserved , http://www.thestar.com/terms",
-      rank: "818",
-      topic: "sport",
-      published_date: "2021-04-17 00:10:38",
-      _id: "86d229be10d6336fadc4e7cb3248b8bb",
-    },
-    {
-      summary:
-        "As outgoing Estevan Police Chief Paul Ladouceur began his last day on the job Friday, he underscored his choice to leave 'has absolutely nothing to do with so-called pressure from the Sask. fed. (Saskatchewan Federation of Police Officers, SFPO) or from social media posts.' Ladouceur tendered his resignation last week following seven years leading the Estevan Police Service. The Leader-Post last week reported Ladouceur was dealing with union pressure from the SFPO. The provincewide police officer's union believes Ladouceur and Estevan's board of police commissioners inappropriately handled Workers Compensation Board (WCB) claims filed by late constable Jay Pierson, by appealing those claims.",
-      country: "CA",
-      author:
-        "Evan Radford, Local Journalism Initiative Reporter, Regina Leader-Post - The Leader-Post",
-      link:
-        "https://www.thestar.com/news/canada/2021/04/16/paul-ladouceur-recounts-time-as-estevan-police-chief.html",
-      language: "en",
-      media: "https://www.thestar.com/assets/img/thestar-ribbon.png",
-      title: "Paul Ladouceur recounts time as Estevan police chief",
-      media_content: null,
-      clean_url: "thestar.com",
-      rights:
-        "© Copyright 1996 - 2020 Toronto Star Newspapers Limited. All Rights Reserved , http://www.thestar.com/terms",
-      rank: "818",
-      topic: "news",
-      published_date: "2021-04-17 00:10:36",
-      _id: "d3fecf30ea86fc2e19687402221747ac",
-    },
-    {
-      summary:
-        "A new sign has appeared on the old Average Joe's building on 6 Street S in downtown Lethbridge.The sign, The Place, looked familiar to some, but the mystery around it sparked conversation online.'The Place was a nightclub back in the early 1980s before The Cadillac came in,' said Floyd Moncrieff, the general manager of the new, The Place.When Average Joe's officially closed on June 24, 2020, Moncrieff saw an opportunity. He also owns Boss Hogs and Club Lime in Lethbridge.'I've looked at this building for many years.",
-      country: "CA",
-      author: "Jessica Robb",
-      link:
-        "https://globalnews.ca/news/7764792/the-place-downtown-lethbridge-return/",
-      language: "en",
-      media:
-        "https://globalnews.ca/wp-content/uploads/2021/04/The-Place.jpg?quality=85&strip=all&w=720&h=379&crop=1",
-      title:
-        "The Place opening in downtown Lethbridge, offering customers blast from past",
-      media_content:
-        "https://globalnews.ca/wp-content/uploads/2021/04/The-Place.jpg?quality=85&strip=all",
-      clean_url: "globalnews.ca",
-      rights: "globalnews.ca",
-      rank: "893",
-      topic: "news",
-      published_date: "2021-04-17 00:10:02",
-      _id: "83bc774ea9d60f5719896ae86f3f7f11",
-    },
-  ],
-  user_input: {
-    lang: "en",
-    country: "CA",
-    topic: null,
-    media: "True",
   },
-};
+  {
+    id:
+      "CBMiX2h0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9idXNpbmVzcy9sb2NhbC1idXNpbmVzcy9vbi10aGUtZnJvbnQtbGluZXMtb2YtbWlsZS1lbmRzLWNoaWNrZW4td2Fy0gGNAWh0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9idXNpbmVzcy9sb2NhbC1idXNpbmVzcy9vbi10aGUtZnJvbnQtbGluZXMtb2YtbWlsZS1lbmRzLWNoaWNrZW4td2FyL3djbS9mYjYyM2U2Ni1jYTdkLTQ4MWYtYjhkYS02MzEyYTk4NmU5YzEvYW1wLw",
+    title: "On the front lines of Mile End's chicken war - Montreal Gazette",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMiX2h0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9idXNpbmVzcy9sb2NhbC1idXNpbmVzcy9vbi10aGUtZnJvbnQtbGluZXMtb2YtbWlsZS1lbmRzLWNoaWNrZW4td2Fy0gGNAWh0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9idXNpbmVzcy9sb2NhbC1idXNpbmVzcy9vbi10aGUtZnJvbnQtbGluZXMtb2YtbWlsZS1lbmRzLWNoaWNrZW4td2FyL3djbS9mYjYyM2U2Ni1jYTdkLTQ4MWYtYjhkYS02MzEyYTk4NmU5YzEvYW1wLw?oc=5",
+    published: "Sat, 17 Apr 2021 10:03:39 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://montrealgazette.com",
+      title: "Montreal Gazette",
+    },
+  },
+  {
+    id: "CAIiEO6YcIPR2aI50xXXOubkyl0qGQgEKhAIACoHCAow7PeJCzCV0pwDMLHPowY",
+    title:
+      "Vaccine confusion: Pregnant woman in Montreal refused a shot even though she's eligible - CTV News Montreal",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMifGh0dHBzOi8vbW9udHJlYWwuY3R2bmV3cy5jYS92YWNjaW5lLWNvbmZ1c2lvbi1wcmVnbmFudC13b21hbi1pbi1tb250cmVhbC1yZWZ1c2VkLWEtc2hvdC1ldmVuLXRob3VnaC1zaGUtcy1lbGlnaWJsZS0xLjUzOTA0NjDSAT9odHRwczovL2JldGEuY3R2bmV3cy5jYS9sb2NhbC9tb250cmVhbC8yMDIxLzQvMTYvMV81MzkwNDYwLmh0bWw?oc=5",
+    published: "Fri, 16 Apr 2021 17:42:00 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://montreal.ctvnews.ca",
+      title: "CTV News Montreal",
+    },
+  },
+  {
+    id:
+      "CBMicGh0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9uZXdzL2xvY2FsLW5ld3MvZnJvbS10b3VyLWRlLWxpbGUtdG8tb3NoZWFnYS1tb250cmVhbHMtc3VtbWVyLWV2ZW50cy1rZWVwLWhvcGUtYWxpdmXSAZ4BaHR0cHM6Ly9tb250cmVhbGdhemV0dGUuY29tL25ld3MvbG9jYWwtbmV3cy9mcm9tLXRvdXItZGUtbGlsZS10by1vc2hlYWdhLW1vbnRyZWFscy1zdW1tZXItZXZlbnRzLWtlZXAtaG9wZS1hbGl2ZS93Y20vMzYwOTJmMzEtY2M1Yy00MDQ2LWI0ZmEtYTMzMzdlYzI3MWVjL2FtcC8",
+    title:
+      "From Tour de l'Île to Osheaga, Montreal summer events keep hope alive - Montreal Gazette",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMicGh0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9uZXdzL2xvY2FsLW5ld3MvZnJvbS10b3VyLWRlLWxpbGUtdG8tb3NoZWFnYS1tb250cmVhbHMtc3VtbWVyLWV2ZW50cy1rZWVwLWhvcGUtYWxpdmXSAZ4BaHR0cHM6Ly9tb250cmVhbGdhemV0dGUuY29tL25ld3MvbG9jYWwtbmV3cy9mcm9tLXRvdXItZGUtbGlsZS10by1vc2hlYWdhLW1vbnRyZWFscy1zdW1tZXItZXZlbnRzLWtlZXAtaG9wZS1hbGl2ZS93Y20vMzYwOTJmMzEtY2M1Yy00MDQ2LWI0ZmEtYTMzMzdlYzI3MWVjL2FtcC8?oc=5",
+    published: "Sat, 17 Apr 2021 12:56:15 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://montrealgazette.com",
+      title: "Montreal Gazette",
+    },
+  },
+  {
+    id: "CAIiEONa9mSYHID2upXhrH0KfLwqGQgEKhAIACoHCAow3KuCCzDNkv8CMKiz8wU",
+    title:
+      "Montreal Restaurants Work Around Outdoor Dining Ban With City Parks - Eater Montreal",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMieGh0dHBzOi8vbW9udHJlYWwuZWF0ZXIuY29tLzIwMjEvNC8xNi8yMjM4NTk0Mi9tb250cmVhbC1yZXN0YXVyYW50cy10YWtlb3V0LWRlbGl2ZXJ5LWNpdHktcGFya3Mtb3V0ZG9vci1pbmRvb3ItZGluaW5nLWJhbtIBhQFodHRwczovL21vbnRyZWFsLmVhdGVyLmNvbS9wbGF0Zm9ybS9hbXAvMjAyMS80LzE2LzIyMzg1OTQyL21vbnRyZWFsLXJlc3RhdXJhbnRzLXRha2VvdXQtZGVsaXZlcnktY2l0eS1wYXJrcy1vdXRkb29yLWluZG9vci1kaW5pbmctYmFu?oc=5",
+    published: "Fri, 16 Apr 2021 17:16:50 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://montreal.eater.com",
+      title: "Eater Montreal",
+    },
+  },
+  {
+    id:
+      "CBMiZmh0dHBzOi8vd3d3LmNiYy5jYS9uZXdzL2NhbmFkYS9tb250cmVhbC9ib2RpZXMtc3VzcGljaW91cy1tb250cmVhbC1tZXJjaWVyLXByb3ZpbmNpYWwtcG9saWNlLTEuNTk5MTY5NtIBIGh0dHBzOi8vd3d3LmNiYy5jYS9hbXAvMS41OTkxNjk2",
+    title:
+      "Police say death of couple on Montreal's South Shore is another case of domestic violence - CBC.ca",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMiZmh0dHBzOi8vd3d3LmNiYy5jYS9uZXdzL2NhbmFkYS9tb250cmVhbC9ib2RpZXMtc3VzcGljaW91cy1tb250cmVhbC1tZXJjaWVyLXByb3ZpbmNpYWwtcG9saWNlLTEuNTk5MTY5NtIBIGh0dHBzOi8vd3d3LmNiYy5jYS9hbXAvMS41OTkxNjk2?oc=5",
+    published: "Sat, 17 Apr 2021 00:22:00 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://www.cbc.ca",
+      title: "CBC.ca",
+    },
+  },
+  {
+    id:
+      "CBMiY2h0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9uZXdzL2xvY2FsLW5ld3MvMTAtdGhpbmdzLXRvLWRvLWluLW1vbnRyZWFsLXRoaXMtd2Vla2VuZC1hcHJpbC0xNi10by0xONIBkQFodHRwczovL21vbnRyZWFsZ2F6ZXR0ZS5jb20vbmV3cy9sb2NhbC1uZXdzLzEwLXRoaW5ncy10by1kby1pbi1tb250cmVhbC10aGlzLXdlZWtlbmQtYXByaWwtMTYtdG8tMTgvd2NtLzU1ZDIwM2Y4LWNiZWYtNDU3Ni1iNTdhLTcyYzc5ZjRkZjVhNC9hbXAv",
+    title:
+      "10 things to do in Montreal this weekend, April 16 to 18 - Montreal Gazette",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMiY2h0dHBzOi8vbW9udHJlYWxnYXpldHRlLmNvbS9uZXdzL2xvY2FsLW5ld3MvMTAtdGhpbmdzLXRvLWRvLWluLW1vbnRyZWFsLXRoaXMtd2Vla2VuZC1hcHJpbC0xNi10by0xONIBkQFodHRwczovL21vbnRyZWFsZ2F6ZXR0ZS5jb20vbmV3cy9sb2NhbC1uZXdzLzEwLXRoaW5ncy10by1kby1pbi1tb250cmVhbC10aGlzLXdlZWtlbmQtYXByaWwtMTYtdG8tMTgvd2NtLzU1ZDIwM2Y4LWNiZWYtNDU3Ni1iNTdhLTcyYzc5ZjRkZjVhNC9hbXAv?oc=5",
+    published: "Fri, 16 Apr 2021 18:11:41 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://montrealgazette.com",
+      title: "Montreal Gazette",
+    },
+  },
+  {
+    id: "CAIiEMTq1-uZAo6nOKQgjSqLN7UqGQgEKhAIACoHCAowivGXCzCmmq8DMLri0AY",
+    title:
+      "A Hilarious TikTok Shows How Montrealers From Different Areas React To COVID-19 Rules - MTL Blog",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMibGh0dHBzOi8vd3d3Lm10bGJsb2cuY29tL2VuLWNhL3Blb3BsZS9tb250cmVhbC90aWt0b2stc2hvd3MtbW9udHJlYWwtbmVpZ2hib3VyaG9vZHMtcmVhY3RpbmctdG8tY292aWQxOS1ydWxlc9IBWmh0dHBzOi8vd3d3Lm10bGJsb2cuY29tL2FtcC90aWt0b2stc2hvd3MtbW9udHJlYWwtbmVpZ2hib3VyaG9vZHMtcmVhY3RpbmctdG8tY292aWQxOS1ydWxlcw?oc=5",
+    published: "Fri, 16 Apr 2021 18:42:41 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://www.mtlblog.com",
+      title: "MTL Blog",
+    },
+  },
+  {
+    id: "CAIiEBT_PuT0Lj_Nuh5-v-UzfqIqGQgEKhAIACoHCAow7PeJCzCV0pwDMLHPowY",
+    title:
+      "'It keeps happening': Black Montrealer alleges racial profiling after traffic stop - CTV News Montreal",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMidWh0dHBzOi8vbW9udHJlYWwuY3R2bmV3cy5jYS9pdC1rZWVwcy1oYXBwZW5pbmctYmxhY2stbW9udHJlYWxlci1hbGxlZ2VzLXJhY2lhbC1wcm9maWxpbmctYWZ0ZXItdHJhZmZpYy1zdG9wLTEuNTM5MDM5ONIBP2h0dHBzOi8vYmV0YS5jdHZuZXdzLmNhL2xvY2FsL21vbnRyZWFsLzIwMjEvNC8xNi8xXzUzOTAzOTguaHRtbA?oc=5",
+    published: "Fri, 16 Apr 2021 16:46:00 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://montreal.ctvnews.ca",
+      title: "CTV News Montreal",
+    },
+  },
+  {
+    id: "CAIiEJc5LkuLp_iuc6o1FOQ_0vYqGQgEKhAIACoHCAowivGXCzCmmq8DMJvd0AY",
+    title:
+      "11 Apartments For Rent Under $1,000/Month In 11 Different Montreal Boroughs - MTL Blog",
+    link:
+      "https://news.google.com/__i/rss/rd/articles/CBMiYmh0dHBzOi8vd3d3Lm10bGJsb2cuY29tL2VuLWNhL3JlYWwtZXN0YXRlL21vbnRyZWFsLzExLW1vbnRyZWFsLWFwYXJ0bWVudHMtZm9yLXJlbnQtdW5kZXItMTAwMG1vbnRo0gFLaHR0cHM6Ly93d3cubXRsYmxvZy5jb20vYW1wLzExLW1vbnRyZWFsLWFwYXJ0bWVudHMtZm9yLXJlbnQtdW5kZXItMTAwMG1vbnRo?oc=5",
+    published: "Fri, 16 Apr 2021 13:59:17 GMT",
+    sub_articles: [],
+    source: {
+      href: "https://www.mtlblog.com",
+      title: "MTL Blog",
+    },
+  },
+];
 
 const NewsFeed = () => {
-  const news = articles.articles;
+  let colorIndex = 0;
   return (
     <Wrapper>
-      {news.map((article) => {
+      {googleNews.map((article) => {
         return (
-          <ArticleBox>
-            <AnchorBox target="_blank" href={article.link}>
-              <ImgContainer>
-                <Img src={article.media} />
-              </ImgContainer>
-              <Title>{article.title}</Title>
-              <Source>{article.summary}...</Source>
-            </AnchorBox>
-          </ArticleBox>
+          <AnchorBox target="_blank" href={article.link}>
+            <ArticleBox
+              style={{
+                backgroundColor: `${dayColors[colorIndex++]}`,
+              }}
+            >
+              <Title key={article.id}>
+                {article.title.slice(0, article.title.indexOf(" - "))}
+              </Title>
+              <Source>{article.source.title}</Source>
+              <Date>
+                {article.published.slice(
+                  0,
+                  article.published.indexOf("2021") + 4
+                )}
+              </Date>
+            </ArticleBox>
+          </AnchorBox>
         );
       })}
     </Wrapper>
@@ -145,47 +175,38 @@ const Wrapper = styled.div`
   width: 95%;
 `;
 const ArticleBox = styled.div`
-  min-width: 270px;
+  min-width: 160px;
+  min-height: 160px;
   margin-right: 10px;
-  background-color: white;
   border-radius: 10px;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 const AnchorBox = styled.a`
   text-decoration: none;
 `;
-const ImgContainer = styled.div`
-  overflow: hidden;
-  width: 270px;
-  height: 170px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-`;
-const Img = styled.img`
-  min-height: 100%;
-  min-width: 100%;
-`;
 const Title = styled.div`
   font-size: 0.9rem;
   font-weight: 600;
-  padding: 6px 10px 0px 10px;
   font-family: "Varela Round", sans-serif;
-  color: ${COLORS.icon1};
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   overflow: hidden;
 `;
 const Source = styled.div`
   font-size: 0.9rem;
-  padding: 6px 10px 0px 10px;
+  font-weight: 500;
+  padding-bottom: 18px;
+  padding-top: 5px;
   color: grey;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 10px;
+`;
+const Date = styled.div`
+  font-size: 0.9rem;
+  color: grey;
+  position: absolute;
+  bottom: 10px;
+  width: 90%;
+  text-align: right;
 `;
 export default NewsFeed;

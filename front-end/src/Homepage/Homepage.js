@@ -30,22 +30,22 @@ const Homepage = () => {
       .catch((error) => console.log("error!", error));
   }, []);
 
-  /* useEffect(() => {
+  /*useEffect(() => {
     fetch(
-      "https://newscatcher.p.rapidapi.com/v1/latest_headlines?lang=en&country=CA&media=True",
+      "https://google-news.p.rapidapi.com/v1/geo_headlines?lang=en&country=CA&geo=Montreal",
       {
         method: "GET",
         headers: {
           "x-rapidapi-key":
             "cd810d4447msh7f9c37965b4af6bp11b0cbjsn16e5607eb462",
-          "x-rapidapi-host": "newscatcher.p.rapidapi.com",
+          "x-rapidapi-host": "google-news.p.rapidapi.com",
         },
       }
     )
       .then((res) => res.json())
       .then((response) => {
         console.log(response);
-       setArticles(response);
+        setArticles(response);
       })
       .catch((err) => {
         console.error(err);
@@ -74,7 +74,7 @@ const Homepage = () => {
         </Greeting>
       </TopBanner>
       <Events>
-        <Preview>Preview of your day</Preview>
+        <SectionTitle>Preview of your day</SectionTitle>
         {dayEvents.map((ev) => {
           return (
             <EventLine>
@@ -87,6 +87,7 @@ const Homepage = () => {
           );
         })}
       </Events>
+      <SectionTitle>Explore your planner</SectionTitle>
       <ActionSec>
         <ActionIcon
           onClick={(ev) => {
@@ -153,13 +154,13 @@ const Welcome = styled.div`
   color: ${COLORS.text1};
 `;
 const MainDate = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 500;
   color: ${COLORS.text1};
   padding: 0px 20px;
   padding-top: 0px;
 `;
-const Preview = styled.div`
+const SectionTitle = styled.div`
   width: 100%;
   text-align: center;
   margin: 20px 0 10px 0;
