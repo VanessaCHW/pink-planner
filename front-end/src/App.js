@@ -6,6 +6,7 @@ import Homepage from "./Homepage/Homepage";
 import CalendarView from "./Calendar/CalendarView";
 import DayView from "./Day/DayView";
 import WeekView from "./Week/WeekView";
+import Music from "./Homepage/Music";
 
 function App() {
   return (
@@ -23,6 +24,9 @@ function App() {
         </Route>
         <Route exact path="/week/:date">
           <WeekView />
+        </Route>
+        <Route exact path="/music">
+          <Music />
         </Route>
       </Switch>
     </Router>

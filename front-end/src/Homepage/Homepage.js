@@ -112,7 +112,11 @@ const Homepage = () => {
           <IconText>Focus</IconText>
         </ActionIcon>
         <ActionIcon>
-          <BiTimer size="40" color={`${COLORS.icon1}`} />
+          <BiTimer
+            onClick={() => history.push("/music")}
+            size="40"
+            color={`${COLORS.icon1}`}
+          />
           <IconText>Playlists</IconText>
         </ActionIcon>
         <ActionIcon>
