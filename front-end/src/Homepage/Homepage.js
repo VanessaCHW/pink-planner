@@ -9,14 +9,15 @@ import { MdToday } from "react-icons/md";
 import NewsFeed from "./NewsFeed";
 import plannerLogo from "./planner_logo.png";
 import NewEventDialog from "../Components/NewEventDialog";
-import rapidKey from "./key";
+import { rapidKey } from "./key";
+
 const Homepage = () => {
   const today = new Date();
   const history = useHistory();
 
   const [dayEvents, setDayEvents] = useState([]);
   const [status, setStatus] = useState("loading");
-  //const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState([]);
 
   useEffect(() => {
     setStatus("loading");
@@ -24,33 +25,41 @@ const Homepage = () => {
       .then((res) => res.json())
       .then((res) => {
         setDayEvents(res.data);
-        console.log(res.data);
+        console.log("Today's events: ", res.data);
         setStatus("idle");
       })
       .catch((error) => console.log("error!", error));
   }, []);
 
-  /*useEffect(() => {
-    fetch(
-      "https://google-news.p.rapidapi.com/v1/geo_headlines?lang=en&country=CA&geo=Montreal",
-      {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key":
-            rapidKey,
-          "x-rapidapi-host": "google-news.p.rapidapi.com",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((response) => {
-        console.log(response);
-        setArticles(response);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);*/
+  useEffect(() => {
+    if (localStorage.getItem("date") === format(today, "yyyy-MM-dd")) {
+      console.log("Local storage is fine");
+      setArticles(JSON.parse(localStorage.getItem("articles")));
+    } else {
+      console.log("LOCAL STORAGE: needs to be updated");
+      /*
+      fetch(
+        "https://google-news.p.rapidapi.com/v1/geo_headlines?lang=en&country=CA&geo=Montreal",
+        {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": rapidKey,
+            "x-rapidapi-host": "google-news.p.rapidapi.com",
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((response) => {
+          console.log(response);
+          setArticles(response.articles);
+          localStorage.setItem("date", format(today, "yyyy-MM-dd"));
+          localStorage.setItem("articles", JSON.stringify(response.articles));
+        })
+        .catch((err) => {
+          console.error(err);
+        });*/
+    }
+  }, []);
 
   let greeting = "";
   if (today.getHours() < 12) {
@@ -63,6 +72,15 @@ const Homepage = () => {
 
   return (
     <Wrapper>
+      <button
+        onClick={(ev) => {
+          localStorage.removeItem("date");
+          localStorage.removeItem("articles");
+          setArticles([]);
+        }}
+      >
+        Clear articles local storage
+      </button>
       <NewEventDialog />
       <TopBanner>
         <Logo src={plannerLogo} />
@@ -107,24 +125,8 @@ const Homepage = () => {
           <GoCalendar size="40" color={`${COLORS.icon1}`} />
           <IconText>Month</IconText>
         </ActionIcon>
-        <ActionIcon>
-          <BiTimer size="40" color={`${COLORS.icon1}`} />
-          <IconText>Focus</IconText>
-        </ActionIcon>
-        <ActionIcon>
-          <BiTimer
-            onClick={() => history.push("/music")}
-            size="40"
-            color={`${COLORS.icon1}`}
-          />
-          <IconText>Playlists</IconText>
-        </ActionIcon>
-        <ActionIcon>
-          <BiTimer size="40" color={`${COLORS.icon1}`} />
-          <IconText>Weather</IconText>
-        </ActionIcon>
       </ActionSec>
-      <NewsFeed />
+      {articles ? <NewsFeed articles={articles} /> : null}
     </Wrapper>
   );
 };
