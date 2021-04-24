@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { COLORS } from "../Constants";
 import Calendar from "react-calendar";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { format } from "date-fns";
 
 const MyCalendar = ({ updateCurrentMonth }) => {

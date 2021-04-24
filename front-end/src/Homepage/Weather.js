@@ -39,6 +39,7 @@ const Weather = () => {
         {weather ? (
           <img
             src={`https://www.weatherbit.io/static/img/icons/${weather.weather.icon}.png`}
+            alt="weather icon"
           />
         ) : null}
 

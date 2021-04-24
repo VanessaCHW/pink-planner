@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { COLORS } from "../Constants";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { format } from "date-fns";
 import { AiOutlineHome } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
@@ -245,6 +245,8 @@ const WeekView = () => {
                 </WEDateContainer>
               </DateContainer>
             );
+          } else {
+            return <></>;
           }
         })}
       </WeekContainer>

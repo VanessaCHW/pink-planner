@@ -1,35 +1,74 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { format } from "date-fns";
 import { dayColors } from "../Constants";
+import { rapidKey } from "./key";
 
-const NewsFeed = ({ articles }) => {
+const NewsFeed = ({ today }) => {
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    if (localStorage.getItem("date") === format(today, "yyyy-MM-dd")) {
+      console.log("Local storage is fine");
+      setArticles(JSON.parse(localStorage.getItem("articles")));
+    } else {
+      console.log("LOCAL STORAGE: needs to be updated");
+
+      fetch(
+        "https://google-news.p.rapidapi.com/v1/geo_headlines?lang=en&country=CA&geo=Montreal",
+        {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": rapidKey,
+            "x-rapidapi-host": "google-news.p.rapidapi.com",
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((response) => {
+          console.log(response);
+          setArticles(response.articles);
+          localStorage.setItem("date", format(today, "yyyy-MM-dd"));
+          localStorage.setItem("articles", JSON.stringify(response.articles));
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [today]);
+
   let colorIndex = 0;
-  return (
-    <Wrapper>
-      {articles.map((article) => {
-        return (
-          <AnchorBox target="_blank" href={article.link}>
-            <ArticleBox
-              style={{
-                backgroundColor: `${dayColors[colorIndex++]}`,
-              }}
-            >
-              <Title key={article.id}>
-                {article.title.slice(0, article.title.indexOf(" - "))}
-              </Title>
-              <Source>{article.source.title}</Source>
-              <Date>
-                {article.published.slice(
-                  0,
-                  article.published.indexOf("2021") + 4
-                )}
-              </Date>
-            </ArticleBox>
-          </AnchorBox>
-        );
-      })}
-    </Wrapper>
-  );
+
+  if (articles) {
+    return (
+      <Wrapper>
+        {articles.map((article) => {
+          return (
+            <AnchorBox target="_blank" href={article.link} key={article.id}>
+              <ArticleBox
+                style={{
+                  backgroundColor: `${dayColors[colorIndex++]}`,
+                }}
+              >
+                <Title>
+                  {article.title.slice(0, article.title.indexOf(" - "))}
+                </Title>
+                <Source>{article.source.title}</Source>
+                <Date>
+                  {article.published.slice(
+                    0,
+                    article.published.indexOf("2021") + 4
+                  )}
+                </Date>
+              </ArticleBox>
+            </AnchorBox>
+          );
+        })}
+      </Wrapper>
+    );
+  } else {
+    return <></>;
+  }
 };
 
 const Wrapper = styled.div`
