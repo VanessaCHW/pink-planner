@@ -6,9 +6,11 @@ import { format } from "date-fns";
 import { GoCalendar } from "react-icons/go";
 import { BiCalendarWeek, BiTimer } from "react-icons/bi";
 import { MdToday } from "react-icons/md";
+
 import NewsFeed from "./NewsFeed";
 import plannerLogo from "./planner_logo.png";
 import NewEventDialog from "../Components/NewEventDialog";
+import Weather from "./Weather";
 import { rapidKey } from "./key";
 
 const Homepage = () => {
@@ -37,7 +39,7 @@ const Homepage = () => {
       setArticles(JSON.parse(localStorage.getItem("articles")));
     } else {
       console.log("LOCAL STORAGE: needs to be updated");
-      /*
+
       fetch(
         "https://google-news.p.rapidapi.com/v1/geo_headlines?lang=en&country=CA&geo=Montreal",
         {
@@ -57,7 +59,7 @@ const Homepage = () => {
         })
         .catch((err) => {
           console.error(err);
-        });*/
+        });
     }
   }, []);
 
@@ -81,7 +83,7 @@ const Homepage = () => {
       >
         Clear articles local storage
       </button>
-      <NewEventDialog />
+
       <TopBanner>
         <Logo src={plannerLogo} />
         <Greeting>
@@ -126,7 +128,9 @@ const Homepage = () => {
           <IconText>Month</IconText>
         </ActionIcon>
       </ActionSec>
+      <Weather />
       {articles ? <NewsFeed articles={articles} /> : null}
+      <NewEventDialog />
     </Wrapper>
   );
 };
