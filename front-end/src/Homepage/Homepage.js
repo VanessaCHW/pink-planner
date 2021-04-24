@@ -74,16 +74,6 @@ const Homepage = () => {
 
   return (
     <Wrapper>
-      <button
-        onClick={(ev) => {
-          localStorage.removeItem("date");
-          localStorage.removeItem("articles");
-          setArticles([]);
-        }}
-      >
-        Clear articles local storage
-      </button>
-
       <TopBanner>
         <Logo src={plannerLogo} />
         <Greeting>
@@ -95,17 +85,21 @@ const Homepage = () => {
       </TopBanner>
       <Events>
         <SectionTitle>Preview of your day</SectionTitle>
-        {dayEvents.map((ev) => {
-          return (
-            <EventLine>
-              <EventHour>
-                {parseInt(ev.start.time.hours)}:{ev.start.time.minutes}{" "}
-                {ev.start.time.ap.toLowerCase()}
-              </EventHour>
-              <EventTitle>{ev.title}</EventTitle>
-            </EventLine>
-          );
-        })}
+        {dayEvents.length === 0 ? (
+          <NothingPlanned>Nothing planned for today. Lucky you!</NothingPlanned>
+        ) : (
+          dayEvents.map((ev) => {
+            return (
+              <EventLine>
+                <EventHour>
+                  {parseInt(ev.start.time.hours)}:{ev.start.time.minutes}{" "}
+                  {ev.start.time.ap.toLowerCase()}
+                </EventHour>
+                <EventTitle>{ev.title}</EventTitle>
+              </EventLine>
+            );
+          })
+        )}
       </Events>
       <SectionTitle>Explore your planner</SectionTitle>
       <ActionSec>
@@ -128,13 +122,22 @@ const Homepage = () => {
           <IconText>Month</IconText>
         </ActionIcon>
       </ActionSec>
+      <Focus>Focus Mode</Focus>
       <Weather />
       {articles ? <NewsFeed articles={articles} /> : null}
       <NewEventDialog />
     </Wrapper>
   );
 };
-
+const Focus = styled.div`
+  background-color: #4d4caa;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 15px;
+  color: white;
+  font-size: 2rem;
+  font-weight: 200;
+`;
 const Wrapper = styled.div`
   background-color: ${COLORS.background};
   margin: 0;
@@ -177,6 +180,14 @@ const SectionTitle = styled.div`
   padding-bottom: 6px;
   font-weight: 600;
   font-family: "Varela Round", sans-serif;
+`;
+const NothingPlanned = styled.div`
+  border-radius: 5px;
+  border: 1px dashed rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  font-size: 1.2rem;
+  font-weight: 300;
+  text-align: center;
 `;
 const Events = styled.div`
   margin: 10px;
