@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { rapidKey } from "./key";
 
 const Weather = () => {
-  const [weather, setWeather] = useState([]);
+  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     fetch(
@@ -36,9 +36,12 @@ const Weather = () => {
           <FeelsLike>FEELS LIKE:</FeelsLike>
           <AppTemp>{parseInt(weather.app_temp)}°c</AppTemp>
         </TempBox>
-        <img
-          src={`https://www.weatherbit.io/static/img/icons/${weather.weather.icon}.png`}
-        />
+        {weather ? (
+          <img
+            src={`https://www.weatherbit.io/static/img/icons/${weather.weather.icon}.png`}
+          />
+        ) : null}
+
         <InfoBox>
           <Description>{weather.weather.description}</Description>
           <Info>
@@ -49,6 +52,8 @@ const Weather = () => {
         </InfoBox>
       </Content>
     );
+  } else {
+    return <div>Loading weather.</div>;
   }
 };
 const Content = styled.div`
