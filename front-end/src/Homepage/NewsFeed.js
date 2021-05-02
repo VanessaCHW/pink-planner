@@ -27,7 +27,7 @@ const NewsFeed = ({ today }) => {
         .then((res) => res.json())
         .then((response) => {
           console.log(response);
-          setArticles(response.articles);
+          setArticles(response.articles.slice(0, 15));
           localStorage.setItem("date", format(today, "yyyy-MM-dd"));
           localStorage.setItem("articles", JSON.stringify(response.articles));
         })

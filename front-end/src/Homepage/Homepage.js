@@ -116,6 +116,7 @@ const TopBanner = styled.div`
   border-radius: 5px;
   margin: 10px;
   padding: 20px 0px 20px 20px;
+  align-items: center;
 `;
 const Logo = styled.img`
   width: 80px;
