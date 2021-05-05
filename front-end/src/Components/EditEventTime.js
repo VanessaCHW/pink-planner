@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { COLORS, HOURS, MINUTES } from "../Constants";
+import { HOURS, MINUTES } from "../Constants";
 import { BsArrowRight } from "react-icons/bs";
 
 const NewEventTime = ({ form, setForm }) => {

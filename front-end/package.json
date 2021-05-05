@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "date-fns": "^2.19.0",
+    "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1",
     "react": "^17.0.1",
     "react-calendar": "^3.3.1",

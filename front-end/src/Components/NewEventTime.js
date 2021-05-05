@@ -1,14 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { COLORS, HOURS, MINUTES } from "../Constants";
-import Calendar from "react-calendar";
-import { format } from "date-fns";
-import { FiCalendar } from "react-icons/fi";
+import { HOURS, MINUTES } from "../Constants";
 import { BsArrowRight } from "react-icons/bs";
-import { GrLocation } from "react-icons/gr";
-import { RiNotification2Line } from "react-icons/ri";
-import { GrClose } from "react-icons/gr";
-import { FcCheckmark } from "react-icons/fc";
 
 const NewEventTime = ({ form, setForm }) => {
   const allDaySelect = (checked) => {
